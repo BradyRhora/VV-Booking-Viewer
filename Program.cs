@@ -46,14 +46,14 @@ namespace VV_Viewer
                             dep = "Weight Room";
                             break;
                         default:
-                            Console.WriteLine("Please enter a valid option.");
+                            Console.WriteLine("\nPlease enter a valid option.");
                             again = true;
                             break;
                     }
                 }
                 await page.GoToAsync("http://vvs03.corp.variety.local:8888/");
                 await page.FocusAsync("body > section > form > input:nth-child(2)");
-                Console.WriteLine("\nLogging in...");
+                Console.WriteLine($"\nLogging in to {dep} using {username}...");
                 await page.Keyboard.TypeAsync(username);
                 await page.FocusAsync("body > section > form > input:nth-child(3)");
                 await page.Keyboard.TypeAsync("Summer2018");
