@@ -21,7 +21,12 @@ namespace VV_Viewer
             using (var browser = await Puppeteer.LaunchAsync(options))
             using (var page = await browser.NewPageAsync())
             {
-                Console.WriteLine("Please choose an area:\n[1] Aquatics\n[2] Fieldhouse\n[3] Cardio Room\n[4] Weight Room");
+                Console.WriteLine(@"Please choose an area:
+                [1] Aquatics
+                [2] Fieldhouse
+                [3] Cardio Room
+                [4] Weight Room
+                [5] Fitness Bookings");
                 string username = "";
                 string dep = "";
                 bool again = true;
@@ -45,6 +50,10 @@ namespace VV_Viewer
                             username = "ksarkar";
                             dep = "Weight Room";
                             break;
+                        case '5':
+                            username = "jsherwin";
+                            dep = "Jamie Stuff";
+                        break;
                         default:
                             Console.WriteLine("\nPlease enter a valid option.");
                             again = true;
@@ -70,6 +79,10 @@ namespace VV_Viewer
                 html.LoadHtml(pageHTML);
                 var doc = html.DocumentNode;
                 var events = doc.SelectSingleNode("/html/body/section/div/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[2]/div/div[2]");
+                if (events.ChildNodes.Count() == 0){
+                    Console.WriteLine("Unable to find any bookings for today! If you're sure they're there, try running again.");
+                    return;
+                }
                 List<string> hrefs = new List<string>();
                 foreach(var node in events.ChildNodes){
                     var atts = node.Attributes;
