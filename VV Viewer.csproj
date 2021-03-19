@@ -8,5 +8,6 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24"/>
     <PackageReference Include="PuppeteerSharp" Version="2.0.4"/>
     <PackageReference Include="Costura.Fody" Version="4.1.0"/>
+    <PackageReference Include="System.Data.SQLite" Version="1.0.113.7"/>
   </ItemGroup>
 </Project>
