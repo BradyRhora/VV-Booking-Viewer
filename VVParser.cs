@@ -84,7 +84,7 @@ namespace VV_Viewer
                 doc = html.DocumentNode;
                 var area = doc.SelectSingleNode("/html/body/header/h1").InnerText.Split('-')[0].Trim();
                 //Console.WriteLine(info);
-                var time = doc.SelectSingleNode("/html/body/header/h5").InnerText.Replace("Class Time:","").Replace("GMT-0400 (Eastern Daylight Time)","").Trim();
+                var time = doc.SelectSingleNode("/html/body/header/h5").InnerText.Replace("Class Time:","").Replace("GMT-0400 (Eastern Daylight Time)","").Replace("GMT-0500 (Eastern Standard Time)","").Trim();
                 var dTime = DateTime.Parse(time);
                 
                 var listNode = doc.SelectSingleNode("/html/body/section/form/ul");

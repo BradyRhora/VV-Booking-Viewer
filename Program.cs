@@ -70,10 +70,18 @@ namespace VV_Viewer
                         con.Open();
                         Console.WriteLine("Database open, retrieving bookings.");
                         bool loop = true;
+                        int noBookingCounter = 0;
                         while(loop){
                             bool noBookings = !(await bs.GetBookingsOnLoadedDay());
-                            if (noBookings) loop = false;
-                            else Console.WriteLine($"Getting bookings for {bs.Bookings[0].StartTime.ToString("d")}");
+                            if (noBookings) noBookingCounter++;
+                            else noBookingCounter = 0;
+                            if (noBookingCounter == 2) loop = false;
+                            else {
+                                if (bs.Bookings.Count > 0)
+                                    Console.WriteLine($"Getting bookings for {bs.Bookings.Last().StartTime.AddDays(-1-noBookingCounter).ToString("d")}");
+                                else
+                                    Console.WriteLine("Getting bookings..");
+                            }
                             await bs.ReturnToMainPage();
                             await bs.GoToPreviousDay();
                         }
