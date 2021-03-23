@@ -64,7 +64,7 @@ namespace VV_Viewer
                 Console.WriteLine("Successful login, navigating to current day...");
                 await bs.GoToCurrentDay();
                 if (dbChoice.KeyChar == 'd'){
-                    string connectionString = "Data Source=/home/brady/Documents/C# Projects/VV Viewer/Databases;Version=3;";
+                    string connectionString = "Data Source=/home/brady/Documents/C# Projects/VV Viewer/Databases.db;Version=3;";
                     using (var con = new SQLiteConnection(connectionString))
                     {
                         con.Open();
