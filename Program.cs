@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SQLite;
 using System.IO;
+using System.Net.Mail;
 
 namespace VV_Viewer
 {
@@ -55,7 +56,7 @@ namespace VV_Viewer
                             break;
                     }
                 }
-                Console.WriteLine("Press D to write to database, or any other key to create html schedule");
+                Console.WriteLine("Press D to write to database for previous days, F for future days, or any other key to create html schedule");
                 var dbChoice = Console.ReadKey();
                 Console.Clear();
                 Console.WriteLine($"Navigating to Variety Schedule Site and logging in to {username}...");
@@ -63,7 +64,7 @@ namespace VV_Viewer
                 await bs.Load(username);
                 Console.WriteLine("Successful login, navigating to current day...");
                 await bs.GoToCurrentDay();
-                if (dbChoice.KeyChar == 'd'){
+                if (dbChoice.KeyChar == 'd' || dbChoice.KeyChar == 'f'){
                     string connectionString = "Data Source=/home/brady/Documents/C# Projects/VV Viewer/Databases.db;Version=3;";
                     using (var con = new SQLiteConnection(connectionString))
                     {
@@ -83,7 +84,8 @@ namespace VV_Viewer
                                     Console.WriteLine("Getting bookings..");
                             }
                             await bs.ReturnToMainPage();
-                            await bs.GoToPreviousDay();
+                            if (dbChoice.KeyChar == 'd') await bs.GoToPreviousDay();
+                            else await bs.GoToNextDay();
                         }
                         Console.WriteLine("Done collecting bookings, inserting into DB.");
                             foreach (var booking in bs.Bookings){
@@ -113,6 +115,37 @@ namespace VV_Viewer
                     string html = bs.BuildHTMLSchedule(dep);
                     File.WriteAllText($"{dep.Replace(" ","_")}_schedule.html",html);
                     Console.WriteLine($"Completed! Open {dep.Replace(" ","_")}_schedule.html to view schedule.");
+                    
+                    var schedPage = await bs.browser.NewPageAsync();
+                    string dir = Environment.CurrentDirectory.Replace("#","%23");
+                    await schedPage.GoToAsync($"file://{dir}/{dep.Replace(" ","_")}_schedule.html");
+                    var ssop = new PuppeteerSharp.ScreenshotOptions();
+                    ssop.FullPage = true;
+                    await schedPage.ScreenshotAsync($"{dep.Replace(" ","_")}_schedule.jpg",ssop);
+                    
+                    Console.WriteLine("Would you like to send an email with the schedule to the VVScheduleMail account? (y/n)");
+                    var mailChoice = Console.ReadKey();
+                    if (mailChoice.KeyChar=='y')
+                    {
+                        MailMessage mail = new MailMessage();
+                        SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+                        string[] credentials = File.ReadAllLines("mailCreds");
+                        mail.From = new MailAddress(credentials[0]);
+                        mail.To.Add(credentials[0]);
+                        mail.Subject = $"Variety Village {dep} Schedule {DateTime.Now.ToString("m")}";
+                        mail.Body = "File attached.";
+
+                        System.Net.Mail.Attachment attachment;
+                        attachment = new System.Net.Mail.Attachment($"{dep.Replace(" ","_")}_schedule.jpg");
+                        mail.Attachments.Add(attachment);
+
+                        SmtpServer.Port = 587;
+                        SmtpServer.Credentials = new System.Net.NetworkCredential(credentials[0], credentials[1]);
+                        SmtpServer.EnableSsl = true;
+
+                        SmtpServer.Send(mail);
+                        Console.WriteLine("Email sent!");
+                    }
                 }
             }
         }

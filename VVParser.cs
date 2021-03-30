@@ -10,7 +10,7 @@ namespace VV_Viewer
     class BookingScraper
     {
         private static string mainPage = "http://vvs03.corp.variety.local:8888";
-        Browser browser;
+        public Browser browser;
         Page page;
         public List<Booking> Bookings {get; private set;}
         public async Task Load(string username)
