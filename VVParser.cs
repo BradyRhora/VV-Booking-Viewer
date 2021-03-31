@@ -140,10 +140,11 @@ namespace VV_Viewer
 
     <body>";
                 string[] sections = Bookings.Select(x=>x.Area).Distinct().ToArray();
-                string htmlMid = $"<h1>Variety Village {dep} Schedule {Bookings.First().StartTime.ToShortDateString()}";
+                string htmlMid = $"<h1>Variety Village {dep} Schedule {Bookings.First().StartTime.ToShortDateString()}</h1>";
+                htmlMid += $"<h3>(As of {DateTime.Now.ToString("h:mm:ss tt")})</h3>";
                 foreach(var section in sections){
                     var slots = Bookings.Where(x=>x.Area == section).ToArray();
-                    htmlMid += $"</h1><h2>{section}</h2><table>";
+                    htmlMid += $"<h2>{section}</h2><table>";
                     htmlMid += "<tr>";
                     for (int i = 0; i < slots.Count(); i++){
                             var time = slots[i].StartTime.ToShortTimeString();
