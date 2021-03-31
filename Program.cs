@@ -10,17 +10,87 @@ namespace VV_Viewer
 {
     class Program
     {
-        
         public static BookingScraper bs;
         static async Task Main(string[] args)
         {
+            if (args.Count() > 0 && args[0] == "prep")
+            {
+                Console.WriteLine(@"Please choose an area for prep:
+    [1] Aquatics
+    [2] Fieldhouse
+    [3] Cardio Room
+    [4] Weight Room
+    [5] Fitness Bookings");
+                string dep = "";
+                bool again = true;
+                while (again){
+                    again = false;
+                    char choice = new char();
+                    choice = Console.ReadKey().KeyChar;
+                    Console.Clear();
+                    switch (choice){
+                        case '1':
+                            dep = "Aquatics";
+                            break;
+                        case '2':
+                            dep = "Fieldhouse";
+                            break;
+                        case '3':
+                            dep = "Cardio Room";
+                            break;
+                        case '4':
+                            dep = "Weight Room";
+                            break;
+                        break;
+                        default:
+                            Console.WriteLine("\nPlease enter a valid option.");
+                            again = true;
+                            break;
+                    }
+                }
 
-                    Console.WriteLine(@"Please choose an area:
-[1] Aquatics
-[2] Fieldhouse
-[3] Cardio Room
-[4] Weight Room
-[5] Fitness Bookings");
+
+                var buildDay = new DateTime(0);
+                if (DateTime.Now.Hour < 6) //today
+                    buildDay = DateTime.Now;
+                else //tmrw
+                    buildDay = DateTime.Now + new TimeSpan(24,0,0);
+
+                string connectionString = "Data Source=Databases.db;Version=3;";
+                using (var con = new SQLiteConnection(connectionString))
+                {
+                    con.Open();
+                    Console.WriteLine("Database open, retrieving bookings.");
+                    
+                    foreach (var booking in bs.Bookings)
+                    {
+                        string com = "select distinct datetime, area from bookings where strftime('%Y-%m-%d', datetime) = strftime('%Y-%m-%d',@date) and area = @area order by datetime";
+
+                        using (var cmd = new SQLiteCommand(com, con))
+                        {
+                            cmd.Parameters.AddWithValue("@date",buildDay);
+                            cmd.Parameters.AddWithValue("@date",dep);
+                            using (var reader = await cmd.ExecuteReaderAsync())
+                            {
+                                List<Booking> bookings = new List<Booking>();
+                                while (await reader.ReadAsync())
+                                {
+                                    //continue here, this returns just the date and times, use those to get names and maybe store in KeyValuePair<Time,Name[]> or something
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                    
+                Console.WriteLine(@"Please choose an area:
+    [1] Aquatics
+    [2] Fieldhouse
+    [3] Cardio Room
+    [4] Weight Room
+    [5] Fitness Bookings");
                 string username = "";
                 string dep = "";
                 bool again = true;
@@ -64,20 +134,23 @@ namespace VV_Viewer
                 await bs.Load(username);
                 Console.WriteLine("Successful login, navigating to current day...");
                 await bs.GoToCurrentDay();
-                if (dbChoice.KeyChar == 'd' || dbChoice.KeyChar == 'f'){
-                    string connectionString = "Data Source=/home/brady/Documents/C# Projects/VV Viewer/Databases.db;Version=3;";
+                if (dbChoice.KeyChar == 'd' || dbChoice.KeyChar == 'f')
+                {
+                    string connectionString = "Data Source=Databases.db;Version=3;";
                     using (var con = new SQLiteConnection(connectionString))
                     {
                         con.Open();
                         Console.WriteLine("Database open, retrieving bookings.");
                         bool loop = true;
                         int noBookingCounter = 0;
-                        while(loop){
+                        while(loop)
+                        {
                             bool noBookings = !(await bs.GetBookingsOnLoadedDay());
                             if (noBookings) noBookingCounter++;
                             else noBookingCounter = 0;
                             if (noBookingCounter == 2) loop = false;
-                            else {
+                            else 
+                            {
                                 if (bs.Bookings.Count > 0)
                                     Console.WriteLine($"Getting bookings for {bs.Bookings.Last().StartTime.AddDays(-1-noBookingCounter).ToString("d")}");
                                 else
@@ -88,26 +161,28 @@ namespace VV_Viewer
                             else await bs.GoToNextDay();
                         }
                         Console.WriteLine("Done collecting bookings, inserting into DB.");
-                            foreach (var booking in bs.Bookings){
-                                string com = "INSERT INTO BOOKINGS(Name, Area, Section, DateTime) VALUES(@name, @area, @section, @date)";
+                        foreach (var booking in bs.Bookings)
+                        {
+                            string com = "INSERT INTO BOOKINGS(Name, Area, Section, DateTime) VALUES(@name, @area, @section, @date)";
 
-                                foreach(var name in booking.Names)
+                            foreach(var name in booking.Names)
+                            {
+                                using (var cmd = new SQLiteCommand(com, con))
                                 {
-                                    using (var cmd = new SQLiteCommand(com, con))
-                                    {
-                                        
-                                        cmd.Parameters.AddWithValue("@name",name);
-                                        cmd.Parameters.AddWithValue("area",dep);
-                                        cmd.Parameters.AddWithValue("@section",booking.Area);
-                                        cmd.Parameters.AddWithValue("@date",booking.StartTime);
-                                        cmd.ExecuteNonQuery();
-                                    }
+                                    
+                                    cmd.Parameters.AddWithValue("@name",name);
+                                    cmd.Parameters.AddWithValue("area",dep);
+                                    cmd.Parameters.AddWithValue("@section",booking.Area);
+                                    cmd.Parameters.AddWithValue("@date",booking.StartTime);
+                                    cmd.ExecuteNonQuery();
                                 }
                             }
-                        
+                        }
                         Console.WriteLine("Completed. See database for results.");
                     }
-                } else {
+                } 
+                else 
+                {
 
                     Console.WriteLine("Collecting booking URLs...");
                     await bs.GetBookingsOnLoadedDay();
@@ -146,8 +221,9 @@ namespace VV_Viewer
                         SmtpServer.Send(mail);
                         Console.WriteLine("Email sent!");
                     }
+                
                 }
             }
         }
     }
-
+}

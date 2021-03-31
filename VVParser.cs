@@ -108,6 +108,12 @@ namespace VV_Viewer
             return true;
         }
     
+        public void InsertBookings(IEnumerable<Booking> bookings)
+        {
+            foreach(var booking in bookings){
+                Bookings.Add(booking);
+            }
+        }
         public void ClearBookings(){
             Bookings = new List<Booking>();
         }
