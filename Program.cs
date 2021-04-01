@@ -41,7 +41,6 @@ namespace VV_Viewer
                         case '4':
                             dep = "Weight Room";
                             break;
-                        break;
                         default:
                             Console.WriteLine("\nPlease enter a valid option.");
                             again = true;
@@ -62,24 +61,51 @@ namespace VV_Viewer
                     con.Open();
                     Console.WriteLine("Database open, retrieving bookings.");
                     
-                    foreach (var booking in bs.Bookings)
+                    
+                    List<DateTime> slots = new List<DateTime>();
+                    string com = "select distinct datetime from bookings where strftime('%Y-%m-%d', datetime) = strftime('%Y-%m-%d',@date) and area = @area order by datetime";
+                    using (var cmd = new SQLiteCommand(com, con))
                     {
-                        string com = "select distinct datetime, area from bookings where strftime('%Y-%m-%d', datetime) = strftime('%Y-%m-%d',@date) and area = @area order by datetime";
-
+                        cmd.Parameters.AddWithValue("@date",buildDay);
+                        cmd.Parameters.AddWithValue("@area",dep);
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                slots.Add(reader.GetDateTime(0));
+                            }
+                        }
+                    }
+                    List<Booking> bookingsToAdd = new List<Booking>();
+                    foreach (var slot in slots)
+                    {
+                        com = "select name, section from bookings where datetime = @date and area = @area";
+                        Console.WriteLine($"test... on slot: {slot.ToShortTimeString()}");
                         using (var cmd = new SQLiteCommand(com, con))
                         {
-                            cmd.Parameters.AddWithValue("@date",buildDay);
-                            cmd.Parameters.AddWithValue("@date",dep);
+                            cmd.Parameters.AddWithValue("@date",slot);
+                            cmd.Parameters.AddWithValue("@area",dep);
                             using (var reader = await cmd.ExecuteReaderAsync())
                             {
-                                List<Booking> bookings = new List<Booking>();
                                 while (await reader.ReadAsync())
                                 {
-                                    //continue here, this returns just the date and times, use those to get names and maybe store in KeyValuePair<Time,Name[]> or something
+                                    string name = reader.GetString(0);
+                                    string section = reader.GetString(1);
+                                    if (bookingsToAdd.Where(x=>x.Area == section && x.StartTime == slot).Count() > 0){
+                                        bookingsToAdd.Where(x=>x.Area==section && x.StartTime == slot).First().AddName(name);
+                                    } else {
+                                        bookingsToAdd.Add(new Booking(section,slot,new string[0]));
+                                    }
                                 }
                             }
                         }
                     }
+                    BookingScraper bookingScraper = new BookingScraper();
+                    await bookingScraper.SoftLoad();
+                    bookingScraper.InsertBookings(bookingsToAdd);
+                    var html = bookingScraper.BuildHTMLSchedule(dep);
+                    await SaveHTMLAsJPG(bookingScraper, html, dep);
+                    MailJPG(dep);
                 }
             }
             else
@@ -152,7 +178,11 @@ namespace VV_Viewer
                             else 
                             {
                                 if (bs.Bookings.Count > 0)
-                                    Console.WriteLine($"Getting bookings for {bs.Bookings.Last().StartTime.AddDays(-1-noBookingCounter).ToString("d")}");
+                                {
+                                    int dayMove = -1;
+                                    if (dbChoice.KeyChar == 'f') dayMove = 1;
+                                    Console.WriteLine($"Getting bookings for {bs.Bookings.Last().StartTime.AddDays(dayMove+(dayMove*noBookingCounter)).ToString("d")}");
+                                }
                                 else
                                     Console.WriteLine("Getting bookings..");
                             }
@@ -170,11 +200,15 @@ namespace VV_Viewer
                                 using (var cmd = new SQLiteCommand(com, con))
                                 {
                                     
-                                    cmd.Parameters.AddWithValue("@name",name);
+                                    cmd.Parameters.AddWithValue("@name",name.Trim());
                                     cmd.Parameters.AddWithValue("area",dep);
                                     cmd.Parameters.AddWithValue("@section",booking.Area);
                                     cmd.Parameters.AddWithValue("@date",booking.StartTime);
-                                    cmd.ExecuteNonQuery();
+                                    try{
+                                        cmd.ExecuteNonQuery();
+                                    } catch (SQLiteException e) {
+                                        Console.WriteLine($"Unable to insert into DB ({name} in {dep} at {booking.StartTime.ToShortTimeString()}\n{e.Message}");
+                                    }
                                 }
                             }
                         }
@@ -191,39 +225,55 @@ namespace VV_Viewer
                     File.WriteAllText($"{dep.Replace(" ","_")}_schedule.html",html);
                     Console.WriteLine($"Completed! Open {dep.Replace(" ","_")}_schedule.html to view schedule.");
                     
-                    var schedPage = await bs.browser.NewPageAsync();
-                    string dir = Environment.CurrentDirectory.Replace("#","%23");
-                    await schedPage.GoToAsync($"file://{dir}/{dep.Replace(" ","_")}_schedule.html");
-                    var ssop = new PuppeteerSharp.ScreenshotOptions();
-                    ssop.FullPage = true;
-                    await schedPage.ScreenshotAsync($"{dep.Replace(" ","_")}_schedule.jpg",ssop);
+                    await SaveHTMLAsJPG(bs,html,dep);
                     
                     Console.WriteLine("Would you like to send an email with the schedule to the VVScheduleMail account? (y/n)");
                     var mailChoice = Console.ReadKey();
                     if (mailChoice.KeyChar=='y')
                     {
-                        MailMessage mail = new MailMessage();
-                        SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
-                        string[] credentials = File.ReadAllLines("mailCreds");
-                        mail.From = new MailAddress(credentials[0]);
-                        mail.To.Add(credentials[0]);
-                        mail.Subject = $"Variety Village {dep} Schedule {DateTime.Now.ToString("m")}";
-                        mail.Body = "File attached.";
-
-                        System.Net.Mail.Attachment attachment;
-                        attachment = new System.Net.Mail.Attachment($"{dep.Replace(" ","_")}_schedule.jpg");
-                        mail.Attachments.Add(attachment);
-
-                        SmtpServer.Port = 587;
-                        SmtpServer.Credentials = new System.Net.NetworkCredential(credentials[0], credentials[1]);
-                        SmtpServer.EnableSsl = true;
-
-                        SmtpServer.Send(mail);
-                        Console.WriteLine("Email sent!");
+                        Console.WriteLine();
+                        MailJPG(dep);
                     }
                 
                 }
             }
+        }
+    
+        static async Task SaveHTMLAsJPG(BookingScraper book, string html, string dep)
+        {
+            File.WriteAllText($"{dep.Replace(" ","_")}_schedule.html",html);
+            Console.WriteLine($"Completed! Open {dep.Replace(" ","_")}_schedule.html to view schedule.");
+            
+            var schedPage = await book.browser.NewPageAsync();
+            string dir = Environment.CurrentDirectory.Replace("#","%23");
+            await schedPage.GoToAsync($"file://{dir}/{dep.Replace(" ","_")}_schedule.html");
+            var ssop = new PuppeteerSharp.ScreenshotOptions();
+            ssop.FullPage = true;
+            await schedPage.ScreenshotAsync($"{dep.Replace(" ","_")}_schedule.jpg",ssop);
+            
+        }
+    
+        static void MailJPG(string dep)
+        {
+            Console.Write("Sending email... ");
+            MailMessage mail = new MailMessage();
+            SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+            string[] credentials = File.ReadAllLines("mailCreds");
+            mail.From = new MailAddress(credentials[0]);
+            mail.To.Add(credentials[0]);
+            mail.Subject = $"{dep} - {DateTime.Now.ToString("MMMM d")} Schedule";
+            mail.Body = "File attached.";
+
+            System.Net.Mail.Attachment attachment;
+            attachment = new System.Net.Mail.Attachment($"{dep.Replace(" ","_")}_schedule.jpg");
+            mail.Attachments.Add(attachment);
+
+            SmtpServer.Port = 587;
+            SmtpServer.Credentials = new System.Net.NetworkCredential(credentials[0], credentials[1]);
+            SmtpServer.EnableSsl = true;
+
+            SmtpServer.Send(mail);
+            Console.WriteLine("Email sent!");
         }
     }
 }

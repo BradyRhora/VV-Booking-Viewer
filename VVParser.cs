@@ -13,6 +13,14 @@ namespace VV_Viewer
         public Browser browser;
         Page page;
         public List<Booking> Bookings {get; private set;}
+        
+        public async Task SoftLoad(){
+            Bookings = new List<Booking>();
+            var options = new LaunchOptions { Headless = true, Args=new string[]{"--no-sandbox"} };
+            //Console.WriteLine("Downloading chromium");
+            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            browser = await Puppeteer.LaunchAsync(options);
+        }
         public async Task Load(string username)
         {
             Bookings = new List<Booking>();
@@ -147,7 +155,7 @@ namespace VV_Viewer
     <body>";
                 string[] sections = Bookings.Select(x=>x.Area).Distinct().ToArray();
                 string htmlMid = $"<h1>Variety Village {dep} Schedule {Bookings.First().StartTime.ToShortDateString()}</h1>";
-                htmlMid += $"<h3>(As of {DateTime.Now.ToString("h:mm:ss tt")})</h3>";
+                htmlMid += $"<h3>(As of {DateTime.Now.ToString("MMM dd h:mm:ss tt")})</h3>";
                 foreach(var section in sections){
                     var slots = Bookings.Where(x=>x.Area == section).ToArray();
                     htmlMid += $"<h2>{section}</h2><table>";
