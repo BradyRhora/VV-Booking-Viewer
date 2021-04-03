@@ -363,6 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # User-specified files
-*.html
+Schedules/*.html
 *.jpg
 mailCreds

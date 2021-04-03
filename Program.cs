@@ -80,7 +80,7 @@ namespace VV_Viewer
                     foreach (var slot in slots)
                     {
                         com = "select name, section from bookings where datetime = @date and area = @area";
-                        Console.WriteLine($"test... on slot: {slot.ToShortTimeString()}");
+                        //Console.WriteLine($"test... on slot: {slot.ToShortTimeString()}");
                         using (var cmd = new SQLiteCommand(com, con))
                         {
                             cmd.Parameters.AddWithValue("@date",slot);
@@ -105,7 +105,7 @@ namespace VV_Viewer
                     bookingScraper.InsertBookings(bookingsToAdd);
                     var html = bookingScraper.BuildHTMLSchedule(dep);
                     await SaveHTMLAsJPG(bookingScraper, html, dep);
-                    MailJPG(dep);
+                    MailJPG(dep,bookingScraper);
                 }
             }
             else
@@ -222,8 +222,8 @@ namespace VV_Viewer
                     await bs.GetBookingsOnLoadedDay();
                     Console.WriteLine("Building schedule...");
                     string html = bs.BuildHTMLSchedule(dep);
-                    File.WriteAllText($"{dep.Replace(" ","_")}_schedule.html",html);
-                    Console.WriteLine($"Completed! Open {dep.Replace(" ","_")}_schedule.html to view schedule.");
+                    File.WriteAllText($"Schedules/{dep.Replace(" ","_")}_schedule.html",html);
+                    Console.WriteLine($"Completed! Open Schedules/{dep.Replace(" ","_")}_schedule.html to view schedule.");
                     
                     await SaveHTMLAsJPG(bs,html,dep);
                     
@@ -232,7 +232,7 @@ namespace VV_Viewer
                     if (mailChoice.KeyChar=='y')
                     {
                         Console.WriteLine();
-                        MailJPG(dep);
+                        MailJPG(dep, bs);
                     }
                 
                 }
@@ -241,31 +241,41 @@ namespace VV_Viewer
     
         static async Task SaveHTMLAsJPG(BookingScraper book, string html, string dep)
         {
-            File.WriteAllText($"{dep.Replace(" ","_")}_schedule.html",html);
-            Console.WriteLine($"Completed! Open {dep.Replace(" ","_")}_schedule.html to view schedule.");
+            File.WriteAllText($"Schedules/{dep.Replace(" ","_")}_schedule.html",html);
+            Console.WriteLine($"Completed! Open Schedules/{dep.Replace(" ","_")}_schedule.html to view schedule.");
             
             var schedPage = await book.browser.NewPageAsync();
             string dir = Environment.CurrentDirectory.Replace("#","%23");
-            await schedPage.GoToAsync($"file://{dir}/{dep.Replace(" ","_")}_schedule.html");
+            await schedPage.GoToAsync($"file://{dir}/Schedules/{dep.Replace(" ","_")}_schedule.html");
             var ssop = new PuppeteerSharp.ScreenshotOptions();
             ssop.FullPage = true;
-            await schedPage.ScreenshotAsync($"{dep.Replace(" ","_")}_schedule.jpg",ssop);
+            await schedPage.ScreenshotAsync($"Schedules/{dep.Replace(" ","_")}_schedule.jpg",ssop);
             
         }
     
-        static void MailJPG(string dep)
+        static void MailJPG(string dep,BookingScraper book)
         {
             Console.Write("Sending email... ");
             MailMessage mail = new MailMessage();
             SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+            if (!File.Exists("mailCreds")){
+                var mc = File.Create("mailCreds");
+                mc.Close();
+                Console.WriteLine("Mail credentials file not found... Please log in:");
+                Console.Write("Email: ");
+                var user = Console.ReadLine();
+                Console.Write("Password: ");
+                var pass = Console.ReadLine();
+                File.WriteAllLines("mailCreds", new string[]{user,pass});
+            }
             string[] credentials = File.ReadAllLines("mailCreds");
             mail.From = new MailAddress(credentials[0]);
             mail.To.Add(credentials[0]);
-            mail.Subject = $"{dep} - {DateTime.Now.ToString("MMMM d")} Schedule";
+            mail.Subject = $"{dep} - {book.Bookings.First().StartTime.ToString("MMMM d")} Schedule";
             mail.Body = "File attached.";
 
             System.Net.Mail.Attachment attachment;
-            attachment = new System.Net.Mail.Attachment($"{dep.Replace(" ","_")}_schedule.jpg");
+            attachment = new System.Net.Mail.Attachment($"Schedules/{dep.Replace(" ","_")}_schedule.jpg");
             mail.Attachments.Add(attachment);
 
             SmtpServer.Port = 587;
