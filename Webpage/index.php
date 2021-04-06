@@ -38,10 +38,15 @@
             <br><br>
             <label for="date">Choose a date:</label>
             <input type="date" id="date" name="date" <?php if (isset($_GET["date"])) echo "value=\"".$_GET["date"]."\"" ?>>
+            <button onclick="setTimeToday()">Today</button>
             <br><br>
             <input type="submit" id="submit" name="submit" >
         </form>
-
+        <script>
+            function setTimeToday(){
+                document.getElementsByTagName("input")[0].setAttribute("value",new Date());
+            }
+        </script>
 
         <?php
            class MyDB extends SQLite3 {
