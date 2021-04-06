@@ -32,8 +32,8 @@
             <select name="area" id="area">
                 <option value="Aquatics" <?php if (isset($_GET["area"]) && $_GET["area"] == "Aquatics") echo "selected"?>>Aquatics</option>
                 <option value="Fieldhouse" <?php if (isset($_GET["area"]) && $_GET["area"] == "Fieldhouse") echo "selected"?>>Fieldhouse</option>
-                <option value="Cardioroom" <?php if (isset($_GET["area"]) && $_GET["area"] == "Cardioroom") echo "selected"?>>Cardio Room</option>
-                <option value="Weightroom" <?php if (isset($_GET["area"]) && $_GET["area"] == "Weightroom") echo "selected"?>>Weight Room</option>
+                <option value="Cardio Room" <?php if (isset($_GET["area"]) && $_GET["area"] == "Cardio Room") echo "selected"?>>Cardio Room</option>
+                <option value="Weight Room" <?php if (isset($_GET["area"]) && $_GET["area"] == "Weight Room") echo "selected"?>>Weight Room</option>
             </select>
             <br><br>
             <label for="date">Choose a date:</label>
