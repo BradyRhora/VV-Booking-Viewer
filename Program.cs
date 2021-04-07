@@ -190,7 +190,16 @@ namespace VV_Viewer
                             if (dbChoice.KeyChar == 'd') await bs.GoToPreviousDay();
                             else await bs.GoToNextDay();
                         }
-                        Console.WriteLine("Done collecting bookings, inserting into DB.");
+                        Console.WriteLine("Done collecting bookings, clearing old bookings then inserting into DB.");
+
+                        if(dbChoice.KeyChar=='f'){
+                            string delCom = "DELETE FROM BOOKINGS WHERE strftime('%Y-%m-%d', DateTime) >= strftime('%Y-%m-%d',@date) AND Area = @area";
+                            using (var cmd = new SQLiteCommand(delCom,con)){
+                                cmd.Parameters.AddWithValue("@date",DateTime.Now);
+                                cmd.Parameters.AddWithValue("@area",dep);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
                         foreach (var booking in bs.Bookings)
                         {
                             string com = "INSERT INTO BOOKINGS(Name, Area, Section, DateTime) VALUES(@name, @area, @section, @date)";
