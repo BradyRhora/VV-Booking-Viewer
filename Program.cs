@@ -94,7 +94,7 @@ namespace VV_Viewer
                                     if (bookingsToAdd.Where(x=>x.Area == section && x.StartTime == slot).Count() > 0){
                                         bookingsToAdd.Where(x=>x.Area==section && x.StartTime == slot).First().AddName(name);
                                     } else {
-                                        bookingsToAdd.Add(new Booking(section,slot,new string[0]));
+                                        bookingsToAdd.Add(new Booking(section,slot,new string[] {name}));
                                     }
                                 }
                             }
