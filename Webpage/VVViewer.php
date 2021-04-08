@@ -224,16 +224,6 @@
             echo $js_code;
         }
     ?>
-    <div id ="footer">
-        <p>Database was last updated: <?php 
-            $db = new MyDB();
-            $com3 = "SELECT VALUE FROM INFO WHERE NAME = "LastUpdate";
-
-            $ret3 = $db->exec($com3);
-            while ($row3 = $ret3->fetchArray(SQLITE3_ASSOC)) {
-                echo $row3['DATETIME']);
-            }
-        ?></p>
-    </div>
+   
     </body>
 </html>
