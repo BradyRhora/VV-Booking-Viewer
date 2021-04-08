@@ -227,10 +227,12 @@
     <div id ="footer">
         <p>Database was last updated: <?php 
             $db = new MyDB();
-            $com = "SELECT VALUE FROM INFO WHERE NAME = "LastUpdate";
+            $com3 = "SELECT VALUE FROM INFO WHERE NAME = "LastUpdate";
 
-            $ret = $db->exec($com);
-            echo $ret->fetchArray(SQLITE3_ASSOC)['VALUE'];
+            $ret3 = $db->exec($com3);
+            while ($row3 = $ret3->fetchArray(SQLITE3_ASSOC)) {
+                echo $row3['DATETIME']);
+            }
         ?></p>
     </div>
     </body>
