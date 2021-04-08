@@ -67,7 +67,7 @@
         <div id="menu">
             <h1>Welcome to the Variety Village Booking Viewer</h1>
             <p>Please fill in the input to view the schedule:</p>
-            <form action="index.php" method="POST">
+            <form action=VVViewer.php" method="POST">
                 <label for="area">Choose an area:</label>
                 <select name="area" id="area">
                     <option value="Aquatics" <?php if (isset($_POST["area"]) && $_POST["area"] == "Aquatics") echo "selected"?>>Aquatics</option>
