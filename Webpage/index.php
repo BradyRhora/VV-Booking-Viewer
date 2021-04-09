@@ -1,5 +1,7 @@
 <html>
     <head>
+        <?php Header("Cache-Control: max-age=3000, must-revalidate"); ?>
+
         <title>VV Booking Viewer</title>
         <link rel="stylesheet" href="style.css">
 
