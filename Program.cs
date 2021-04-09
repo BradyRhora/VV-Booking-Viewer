@@ -221,6 +221,12 @@ namespace VV_Viewer
                                 }
                             }
                         }
+
+                        string infoCom = "UPDATE INFO SET lastupdate = @date";
+                        using (var cmd = new SQLiteCommand(infoCom,con)){
+                            cmd.Parameters.AddWithValue("@date",DateTime.Now);
+                            cmd.ExecuteNonQuery();
+                        }
                         Console.WriteLine("Completed. See database for results.");
                     }
                 } 
