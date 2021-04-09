@@ -3,7 +3,8 @@
 }
 
 h1, h2, h3{
-    color:#0F1020
+    color:#0F1020;
+    text-size-adjust:200%;
 }
 body{
     background-color: #C8E0F4;
@@ -19,9 +20,12 @@ table, th,td {
 td{
     background-color:#587291;
     width:120px;
+    
+    text-size-adjust:175%;
 }
 th{
     background-color:#0F1020;
+    text-size-adjust:150%;
 }
 td.empty{
     background-color:#B75D69;
@@ -72,14 +76,13 @@ td.empty{
     position:absolute;
     top:300px;
     left:0px;
-    padding-bottom:40px;
+    padding-bottom:60px;
 }
 
 #schedules>td,#schedules>table{
     width:100vw;
-    height:200px;
+    height:100px;
     margin:0px;
-    text-size-adjust:175%;
 }
 
 p, td, th, h1,h2,h3, label{
