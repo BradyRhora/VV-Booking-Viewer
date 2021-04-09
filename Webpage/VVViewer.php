@@ -3,69 +3,11 @@
         <?php Header("Cache-Control: max-age=3000, must-revalidate"); ?>
 
         <title>VV Booking Viewer</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 
-        <style>
-            *{
-                text-align:center;
-            }
-
-            h1, h2, h3{
-                color:#0F1020
-            }
-            body{
-                background-color: #C8E0F4;
-            }
-
-            table, th,td {
-                border: 1px solid black;
-                border-collapse: collapse;
-                font-size:20px;
-                color:#FBFBFF;
-            }
-            td{
-                background-color:#587291;
-                width:120px;
-            }
-            th{
-                background-color:#0F1020;
-            }
-            td.empty{
-                background-color:#B75D69;
-            }
-
-            #menu{
-                overflow:hidden;
-                position:absolute;
-                left:50%;
-                transform: translate(-50%,0);
-                margin-top:20px;
-            }
-
-            #logo{
-                width:150px;
-                float:left;
-                overflow:hidden;
-                margin:20px;
-            }
-
-            #schedules{
-                position:absolute;
-                top:300px;
-                left:0px;
-            }
-
-            #schedules>td,#schedules>table{
-                width:100vw;
-                height:100px;
-                margin:0px;
-                text-size-adjust:175%;
-            }
-        
-        </style>
     </head>
     <body>
-        <img id="logo" src="resources/logo-variety-ontario.png"></img>
+        <a href="VVViewer.php"><img id="logo" src="resources/logo-variety-ontario.png"></img></a>
         <div id="menu">
             <h1>Welcome to the Variety Village Booking Viewer</h1>
             <p>Please fill in the input to view the schedule:</p>
@@ -199,7 +141,7 @@
                     echo "<tr>";
                     for ($i = 0; $i < count($slots); $i++){
                         $time = new DateTime($slots[$i]->starttime);
-                        echo "<th>".$time->format('H:i')."</th>";
+                        echo "<th>".$time->format('g:i a')."</th>";
                     }
                     echo "<tr>";
                     for ($o = 0; $o < max(array_map(function($x) {return count($x->names);}, $slots)); $o++){
@@ -217,6 +159,18 @@
                 
             }
             ?>
+        </div>
+
+        <div id="footer">
+            <p id = "left">If there's a error, let Brady know!</p>
+            
+            <p id = "right"><?php 
+                $db = new MyDB();
+                $com = "SELECT VALUE FROM INFO WHERE NAME = \"LastUpdate\"";
+                $ret = $db->querySingle($com);
+                
+                echo "Database last updated on: " . $ret;
+            ?></p>
         </div>
     <?php
         function console_log($output, $with_script_tags = true) {
