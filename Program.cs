@@ -222,7 +222,7 @@ namespace VV_Viewer
                             }
                         }
 
-                        string infoCom = "UPDATE INFO SET lastupdate = @date";
+                        string infoCom = "UPDATE INFO SET Value = @date WHERE Name = 'LastUpdate'";
                         using (var cmd = new SQLiteCommand(infoCom,con)){
                             cmd.Parameters.AddWithValue("@date",DateTime.Now);
                             cmd.ExecuteNonQuery();
