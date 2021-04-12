@@ -148,7 +148,6 @@ namespace VV_Viewer
             td.empty{
                 background-color:#e63946;
             }
-        
         </style>
     </head>
 
@@ -182,7 +181,6 @@ namespace VV_Viewer
                     htmlMid += "</table>";
                 }
                 
-
                 string htmlEnd = "</body></html>";
 
                 return(htmlStart+htmlMid+htmlEnd);

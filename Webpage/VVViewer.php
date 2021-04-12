@@ -28,6 +28,9 @@
                 <br><br>
                 <input type="submit" id="submit" name="submit" >
             </form>
+
+            <!--<form>
+            </form>-->
         </div>
         <script>
             function setTime(date){
@@ -100,7 +103,7 @@
                     array_push($slots, $row1['DATETIME']);
                 }
                 $ret1->finalize();
-
+                
                 $Bookings = [];
                 foreach($slots as $slot)
                 {
@@ -129,6 +132,28 @@
                         }
                     }
                     $ret->finalize();
+
+                    $secCmd = $db->prepare("SELECT DISTINCT SECTION FROM BOOKINGS WHERE AREA = :area");
+                    $secCmd->bindValue(":area",$_POST["area"]);
+                    $secRet = $secCmd->execute();
+
+                    $sections = [];
+                    while ($secRow = $secRet->fetchArray(SQLITE3_ASSOC)) {
+                        array_push($sections, $secRow['SECTION']);
+                    }
+                    $secRet->finalize();
+
+                    foreach($sections as $section){
+                        $potent2 = array_values(array_filter($Bookings,function($x){
+                            global $section;
+                            global $slot;
+                            return $x->section == $section && $x->starttime == $slot;
+                        }));
+                        
+                        if (count($potent2) == 0){
+                            array_push($Bookings,new Booking($row['SECTION'], $slot, ""])); //blank name to keep schedule lined up
+                        }
+                    }
                 }
                 $db->close();
 
