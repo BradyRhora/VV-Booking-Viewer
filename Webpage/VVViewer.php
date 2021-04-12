@@ -159,6 +159,15 @@
                 
             }
             ?>
+
+
+            <?php
+                //if no time selected display some kind of calender with booking info for the month
+                if (!isset($_PUSH['date'])){
+                    $date = new Date();
+                    $date->setDate($date->getYear(), $date->getMonth(), 1); //wrong
+                }
+            ?>
         </div>
 
         <div id="footer">
