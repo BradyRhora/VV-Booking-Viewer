@@ -171,7 +171,7 @@
         </div>
 
         <div id="footer">
-            <p id = "left">If there's a error, let Brady know!</p>
+            <p id = "left">If there's an error, let Brady know!</p>
             
             <p id = "right"><?php 
                 $db = new MyDB();
