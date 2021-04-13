@@ -132,7 +132,7 @@
                         }
                     }
                     $ret->finalize();
-
+                    
                     $secCmd = $db->prepare("SELECT DISTINCT SECTION FROM BOOKINGS WHERE AREA = :area");
                     $secCmd->bindValue(":area",$_POST["area"]);
                     $secRet = $secCmd->execute();
@@ -150,10 +150,12 @@
                             return $x->section == $section && $x->starttime == $slot;
                         }));
                         
+
                         if (count($potent2) == 0){
-                            array_push($Bookings,new Booking($row['SECTION'], $slot, ""])); //blank name to keep schedule lined up
+                            array_push($Bookings,new Booking($section, $slot, [""])); //blank name to keep schedule lined up
                         }
                     }
+                    
                 }
                 $db->close();
 
@@ -171,7 +173,7 @@
                     echo "<tr>";
                     for ($o = 0; $o < max(array_map(function($x) {return count($x->names);}, $slots)); $o++){
                         for ($i = 0; $i < count($slots); $i++){
-                            if (count($slots[$i]->names) > $o){
+                            if (count($slots[$i]->names) > $o && $slots[$i]->names[0]!=""){
                                 echo "<td>".$slots[$i]->names[$o]."</td>";
                             } else {
                                 echo "<td class=\"empty\"></td>";
@@ -185,14 +187,6 @@
             }
             ?>
 
-
-            <?php
-                //if no time selected display some kind of calender with booking info for the month
-                if (!isset($_PUSH['date'])){
-                    $date = new Date();
-                    $date->setDate($date->getYear(), $date->getMonth(), 1); //wrong
-                }
-            ?>
         </div>
 
         <div id="footer">
