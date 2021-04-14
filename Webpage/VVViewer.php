@@ -4,33 +4,37 @@
 
         <title>VV Booking Viewer</title>
         <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+        <script src="resources/jquery-3.6.0.js"></script>
 
     </head>
     <body>
         <a href="VVViewer.php"><img id="logo" src="resources/logo-variety-ontario.png"></img></a>
         <div id="menu">
             <h1>Welcome to the Variety Village Booking Viewer</h1>
-            <p>Please fill in the input to view the schedule:</p>
-            <form action="VVViewer.php" method="POST">
-                <label for="area">Choose an area:</label>
-                <select name="area" id="area">
-                    <option value="Aquatics" <?php if (isset($_POST["area"]) && $_POST["area"] == "Aquatics") echo "selected"?>>Aquatics</option>
-                    <option value="Fieldhouse" <?php if (isset($_POST["area"]) && $_POST["area"] == "Fieldhouse") echo "selected"?>>Fieldhouse</option>
-                    <option value="Cardio Room" <?php if (isset($_POST["area"]) && $_POST["area"] == "Cardio Room") echo "selected"?>>Cardio Room</option>
-                    <option value="Weight Room" <?php if (isset($_POST["area"]) && $_POST["area"] == "Weight Room") echo "selected"?>>Weight Room</option>
-                </select>
-                <br><br>
-                <label for="date">Choose a date:</label>
-                <input type="date" id="date" name="date" <?php if (isset($_POST["date"])) echo "value=\"".$_POST["date"]."\"" ?>>
-                <button onclick="prevDay()"><</button>
-                <button onclick="setTime(new Date())">Today</button>
-                <button onclick="nextDay()">></button>
-                <br><br>
-                <input type="submit" id="submit" name="submit" >
-            </form>
-
-            <!--<form>
-            </form>-->
+                    <form id="schedForm" action="VVViewer.php" method="POST">
+                        <label for="area">Choose an area:</label>
+                        <select name="area" id="area">
+                            <option value="Aquatics" <?php if (isset($_POST["area"]) && $_POST["area"] == "Aquatics") echo "selected"?>>Aquatics</option>
+                            <option value="Fieldhouse" <?php if (isset($_POST["area"]) && $_POST["area"] == "Fieldhouse") echo "selected"?>>Fieldhouse</option>
+                            <option value="Cardio Room" <?php if (isset($_POST["area"]) && $_POST["area"] == "Cardio Room") echo "selected"?>>Cardio Room</option>
+                            <option value="Weight Room" <?php if (isset($_POST["area"]) && $_POST["area"] == "Weight Room") echo "selected"?>>Weight Room</option>
+                        </select>
+                        <br><br>
+                        <label for="date">Choose a date:</label>
+                        <input type="date" id="date" name="date" <?php if (isset($_POST["date"])) echo "value=\"".$_POST["date"]."\"" ?>>
+                        <button onclick="prevDay()"><</button>
+                        <button onclick="setTime(new Date())">Today</button>
+                        <button onclick="nextDay()">></button>
+                        <br><br>
+                        <input type="submit" id="submit" name="submit" >
+                    </form>
+                    <form id="searchForm" action="VVViewer.php" method="POST">
+                        <label for="search">Member lookup:</label>
+                        <input id="search" name="search" <?php if (isset($_POST["search"])) echo "value=\"".$_POST["search"]."\""?> onfocus="this.value = this.value;"></input>
+                        <?php if (isset($_POST["search"])) echo "<script>document.getElementById(\"search\").focus()</script>" ?>
+                        <input type="submit" name="submit" value="Search">
+                    </form>
+            </table>
         </div>
         <script>
             function setTime(date){
@@ -56,6 +60,7 @@
                 currentDay.setDate(currentDay.getDate()-1);
                 setTime(currentDay);
             }
+
         </script>
 
         <div id="schedules">
@@ -114,7 +119,6 @@
             EOT);
                     $stm->bindValue(':area',$_POST["area"]);
                     $stm->bindValue(':date',$slot);
-                    //var_dump($stm->getSQL());
                     $ret = $stm->execute();
                     while ($row = $ret->fetchArray(SQLITE3_ASSOC)) {
                         $sec = $row['SECTION'];
@@ -160,11 +164,10 @@
                 $db->close();
 
 
-                //print_r($Bookings);
                 $sections = array_unique(array_map(function($x) { return $x->section;},$Bookings));
                 foreach($sections as $section){
                     $slots = array_values(array_filter($Bookings,function($x){global $section; return $x->section==$section;}));
-                    echo "<h2>".$section."</h2><table>";
+                    echo "<h2>".$section."</h2><table id=\"daySched\">";
                     echo "<tr>";
                     for ($i = 0; $i < count($slots); $i++){
                         $time = new DateTime($slots[$i]->starttime);
@@ -189,8 +192,48 @@
 
         </div>
 
+        <div id="memberSchedule">
+            <?php
+                if (isset($_POST["search"])){
+                    $name = $_POST["search"];
+                    $db = new MyDB();
+                    if(!$db) {
+                        echo $db->lastErrorMsg();
+                    }
+                    $stm = $db->prepare(<<<EOT
+                    SELECT * FROM BOOKINGS
+                    WHERE NAME LIKE :name
+                    ORDER BY DATETIME
+                EOT);
+                    $stm->bindValue(':name','%'.$name.'%');
+                    $ret = $stm->execute();
+                    echo "<table><tr><th>Name</th><th>Area</th><th>Section</th><th>Time</th></tr>";
+                    
+                    while ($row = $ret->fetchArray(SQLITE3_ASSOC)) {
+                        echo "<tr>";
+                        echo "<td>".$row["NAME"]."</td>";
+                        echo "<td>".$row["AREA"]."</td>";
+                        echo "<td>".$row["SECTION"]."</td>";
+                        echo "<td>".$row["DATETIME"]."</td>";
+                        echo "</tr>";
+                    }
+                    $ret->finalize();
+                    
+                    echo "</table>";
+
+                    /*
+                    $stm = $db->prepare("SELECT * FROM BOOKINGS WHERE NAME LIKE '%:name%' ORDER BY DATETIME");
+                    $stm->bindValue(':name',$name);
+                    var_dump($stm->getSQL(true));
+                    $ret = $stm->execute();
+                    */
+                }
+            ?>
+
+        </div>
+
         <div id="footer">
-            <p id = "left">If there's an error, let Brady know!</p>
+            <p id = "left">Remember, if Brady isn't at work then this probably isn't up to date! Don't completely rely on it.</p>
             
             <p id = "right"><?php 
                 $db = new MyDB();
@@ -198,7 +241,13 @@
                 $ret = $db->querySingle($com);
                 
                 echo "Database last updated on: " . $ret;
-            ?></p>
+                
+            ?>
+
+            <svg onclick="togglechat()" id="chatbutton" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M2.001 9.352c0 1.873.849 2.943 1.683 3.943.031 1 .085 1.668-.333 3.183 1.748-.558 2.038-.778 3.008-1.374 1 .244 1.474.381 2.611.491-.094.708-.081 1.275.055 2.023-.752-.06-1.528-.178-2.33-.374-1.397.857-4.481 1.725-6.649 2.115.811-1.595 1.708-3.785 1.661-5.312-1.09-1.305-1.705-2.984-1.705-4.695-.001-4.826 4.718-8.352 9.999-8.352 5.237 0 9.977 3.484 9.998 8.318-.644-.175-1.322-.277-2.021-.314-.229-3.34-3.713-6.004-7.977-6.004-4.411 0-8 2.85-8 6.352zm20.883 10.169c-.029 1.001.558 2.435 1.088 3.479-1.419-.258-3.438-.824-4.352-1.385-.772.188-1.514.274-2.213.274-3.865 0-6.498-2.643-6.498-5.442 0-3.174 3.11-5.467 6.546-5.467 3.457 0 6.546 2.309 6.546 5.467 0 1.12-.403 2.221-1.117 3.074zm-7.563-3.021c0-.453-.368-.82-.82-.82s-.82.367-.82.82.368.82.82.82.82-.367.82-.82zm3 0c0-.453-.368-.82-.82-.82s-.82.367-.82.82.368.82.82.82.82-.367.82-.82zm3 0c0-.453-.368-.82-.82-.82s-.82.367-.82.82.368.82.82.82.82-.367.82-.82z"/>
+            </svg>
+            </p>
         </div>
     <?php
         function console_log($output, $with_script_tags = true) {
@@ -208,6 +257,40 @@
             echo $js_code;
         }
     ?>
-   
+    
+    <div id="chat">
+        <h3>coming soon</h3><!--
+        <table>
+            <tr> <td>7</td> <td>8</td> <td>9</td> </tr>
+            <tr> <td>4</td> <td>5</td> <td>6</td> </tr>
+            <tr> <td>1</td> <td>2</td> <td>3</td> </tr>
+            <tr> <td></td> <td>0</td> <td></td> </tr>
+        </table>-->
+    </div>
+    
+    <script>
+        var open = false;
+        function togglechat(){
+            var chat = document.getElementById("chat");
+            if (open)
+                chat.style.display = "none";
+            else
+                chat.style.display = "block";
+            open = !open;
+                
+            var db = window.openDatabase("../Bookings.db", "1.0", "Bookings", 10000);
+            console.log(1);
+            db.transaction(function(x){
+                console.log(2);
+                x.executeSql("SELECT * FROM BOOKINGS LIMIT 1", [], function (x,result){
+                    console.log(3);
+                    var dataset = result.rows;
+                    console.log(dataset);
+                });
+            })
+        }    
+    </script>
+    
+
     </body>
 </html>

@@ -1,33 +1,53 @@
-*{
-    text-align:center;
-}
-
 h1, h2, h3{
     color:#0F1020;
     text-size-adjust:200%;
+    text-align: center;
 }
 body{
     background-color: #C8E0F4;
     overflow-x:hidden;
 }
 
-table, th,td {
-    border: 1px solid black;
+#menu{
+    overflow:hidden;
+    position:absolute;
+    left:50%;
+    transform: translate(-50%,0);
+    margin-top:20px;
+}
+
+#logo{
+    width:150px;
+    float:left;
+    overflow:hidden;
+    margin:20px;
+}
+
+form{
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
+    background-color:#7a93b1;
+    border: 1px #0F1020 solid;
+}
+
+#daySched,#daySched th,#daySched td {
+    border: 1px solid #0F1020;
     border-collapse: collapse;
     font-size:20px;
     color:#FBFBFF;
 }
-td{
+#daySched td{
     background-color:#587291;
     width:120px;
     
     text-size-adjust:175%;
 }
-th{
+#daySched th{
     background-color:#0F1020;
     text-size-adjust:150%;
 }
-td.empty{
+#daySched td.empty{
     background-color:#B75D69;
 }
 
@@ -52,34 +72,25 @@ td.empty{
     margin-right:15px;
 }
 
+#footer path{
+    position:relative;
+    fill: #FBFBFF;
+    left:5px;
+}
+
 #footer>#left{
     left:0px;
     margin-left:15px;
 }
 
-#menu{
-    overflow:hidden;
+#schedules, #memberSchedule{
     position:absolute;
-    left:50%;
-    transform: translate(-50%,0);
-    margin-top:20px;
-}
-
-#logo{
-    width:150px;
-    float:left;
-    overflow:hidden;
-    margin:20px;
-}
-
-#schedules{
-    position:absolute;
-    top:300px;
+    top:350px;
     left:0px;
     padding-bottom:60px;
 }
 
-#schedules>td,#schedules>table{
+#schedules>td,#schedules>table, #memberSchedule>td,#memberSchedule>table{
     width:100vw;
     height:100px;
     margin:0px;
@@ -87,6 +98,29 @@ td.empty{
 
 p, td, th, h1,h2,h3, label{
     font-family:defaultFont;
+}
+
+#chatbutton{
+    cursor:pointer;
+}
+
+#chat{
+    display:none;
+    position:fixed;
+    bottom:50px;
+    right:0px;
+    width:350px;
+    height:400px;
+    background-color: #587291;
+    border-top-left-radius: 10px;
+    border: 1px #0F1020 solid;
+}
+
+#chat td {
+    padding: 25px;
+    background-color: #0F1020;
+    border-radius: 10px;
+    color:#FBFBFF
 }
 
 @font-face{
