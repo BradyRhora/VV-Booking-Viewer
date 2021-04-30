@@ -116,7 +116,8 @@ namespace VV_Viewer
     [2] Fieldhouse
     [3] Cardio Room
     [4] Weight Room
-    [5] Fitness Bookings");
+    [5] Fitness Bookings
+    [6] Full DB Update");
                 string username = "";
                 string dep = "";
                 bool again = true;
@@ -125,6 +126,7 @@ namespace VV_Viewer
                     char choice = new char();
                     choice = Console.ReadKey().KeyChar;
                     Console.Clear();
+                    //KeyValuePair[] logins;
                     switch (choice){
                         case '1':
                             username = "aquatics";
