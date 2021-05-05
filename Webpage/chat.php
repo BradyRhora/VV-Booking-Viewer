@@ -47,10 +47,13 @@
                 
                 echo "test3";
                 $db = new MyDB();
+                
+                echo "test4";
                 $cmd = $db->prepare("SELECT * FROM INFO WHERE NAME='ChatPass' AND VALUE = :pass");
                 $cmd->bindValue(':pass',$md5Pass);
                 $res = $cmd->execute();
                 $ret = $res->fetchArray();
+                echo "test5";
                 if ($ret){
                     $res->finalize();
                     if (isset($_POST['name']) && isset($_POST['message'])){
@@ -61,7 +64,6 @@
                         $res->finalize();
                     }
 
-                    echo "test4";
                     $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
                     
                     echo "<div id=\"messages\">";
