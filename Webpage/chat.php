@@ -13,7 +13,10 @@
     </head>
     <body>
         
-        <?php
+	<?php
+	ini_set('display_errors', 1);
+	ini_set('display_startup_errors', 1);
+	error_reporting(E_ALL);
             class MyDB extends SQLite3 {
                 function __construct() {
                 $this->open('../Databases.db');
@@ -55,15 +58,20 @@
                 $ret = $res->fetchArray();
                 echo "test5";
                 if ($ret){
-                    $res->finalize();
+			$res->finalize();
+			echo "test5b";
                     if (isset($_POST['name']) && isset($_POST['message'])){
                         $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
-                        $cmd->bindValue(':msg', $_POST['message']);
+			echo "test5c";
+			$cmd->bindValue(':msg', $_POST['message']);
                         $cmd->bindValue(':name', $_POST['name']);
-                        $res = $cmd->execute();
-                        $res->finalize();
+			echo "test5d";
+			$res = $cmd->execute();
+			echo "test5e";
+			$res->finalize();
+			echo "test5f";
                     }
-
+			echo "test6";
                     $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
                     
                     echo "<div id=\"messages\">";
@@ -74,7 +82,8 @@
                         echo "<p class=\"time\" class=\"time\">".$row['DateTime']."</p></div>";
                         echo "<p class=\"message\">".$row['Message']."</p> ";
                         echo "</div>";
-                    }
+		    }
+			echo "test7";
                 }
                 else {
                     echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
