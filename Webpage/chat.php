@@ -13,16 +13,15 @@
     </head>
     <body>
         
-	<?php
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
+        <?php
+            ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+            error_reporting(E_ALL);
             class MyDB extends SQLite3 {
                 function __construct() {
                 $this->open('../Databases.db');
                 }
             }
-            echo "test1";
             $md5Pass = "";
             if (isset($_POST["pass"])){
                 $pass = $_POST["pass"];
@@ -31,68 +30,55 @@
                 $md5Pass = $_POST["token"];
             }
             
-            echo "test2";
             if ($md5Pass != "") 
             {
                 if (!isset($_POST['name'])){
                     echo <<<EOT
                     <div id="hideBox">
                     <div id="nameInput">
-                        <form id="nameForm" method="POST">
-                            <label for="name">Please enter your name:</label><br>
-                            <input type="text" name="name">
-                            <input type="submit">
+                    <form id="nameForm" method="POST">
+                    <label for="name">Please enter your name:</label><br>
+                    <input type="text" name="name">
+                    <input type="submit">
                     EOT;
                     echo "<input name=\"token\" type=\"hidden\" value=\"".$md5Pass."\">";
                     echo "</form></div></div>";
-                    
                 }
                 
-                echo "test3";
                 $db = new MyDB();
-                
-                echo "test4";
                 $cmd = $db->prepare("SELECT * FROM INFO WHERE NAME='ChatPass' AND VALUE = :pass");
                 $cmd->bindValue(':pass',$md5Pass);
                 $res = $cmd->execute();
                 $ret = $res->fetchArray();
-                echo "test5";
                 if ($ret){
-			$res->finalize();
-			echo "test5b";
-                    if (isset($_POST['name']) && isset($_POST['message'])){
-                        $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
-			echo "test5c";
-			$cmd->bindValue(':msg', $_POST['message']);
-                        $cmd->bindValue(':name', $_POST['name']);
-			echo "test5d";
-			$res = $cmd->execute();
-			echo "test5e";
-			$res->finalize();
-			echo "test5f";
-                    }
-			echo "test6";
-                    $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
+                    $res->finalize();
+                if (isset($_POST['name']) && isset($_POST['message']))
+                {
+                    $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
+                    $cmd->bindValue(':msg', $_POST['message']);
+                    $cmd->bindValue(':name', $_POST['name']);
+                    $res = $cmd->execute();
+                    $res->finalize();
+                }
+                $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
                     
-                    echo "<div id=\"messages\">";
-                    while ($row = $ret->fetchArray(SQLITE3_ASSOC)){
-                        echo "<div id=\"msg\">";
-                        echo "<div id=\"msgHeader\">";
-                        echo "<b class=\"name\">".$row['Name']."</b> ";
-                        echo "<p class=\"time\" class=\"time\">".$row['DateTime']."</p></div>";
-                        echo "<p class=\"message\">".$row['Message']."</p> ";
-                        echo "</div>";
-		    }
-			echo "test7";
+                echo "<div id=\"messages\">";
+                while ($row = $ret->fetchArray(SQLITE3_ASSOC))
+                {
+                    echo "<div id=\"msg\">";
+                    echo "<div id=\"msgHeader\">";
+                    echo "<b class=\"name\">".$row['Name']."</b> ";
+                    echo "<p class=\"time\" class=\"time\">".$row['DateTime']."</p></div>";
+                    echo "<p class=\"message\">".$row['Message']."</p> ";
+                    echo "</div>";
                 }
-                else {
-                    echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
-                }
-
+            }
+            else {
+                echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
+            }
             } else {
                 echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
             }
-            echo "test5";
         ?>
         </div>
         <form id="textBox" action="chat.php" method="POST">
