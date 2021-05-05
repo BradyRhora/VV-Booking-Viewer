@@ -19,7 +19,7 @@
                 $this->open('../Databases.db');
                 }
             }
-
+            echo "test1";
             $md5Pass = "";
             if (isset($_POST["pass"])){
                 $pass = $_POST["pass"];
@@ -27,7 +27,8 @@
             } else if (isset($_POST["token"])){
                 $md5Pass = $_POST["token"];
             }
-
+            
+            echo "test2";
             if ($md5Pass != "") 
             {
                 if (!isset($_POST['name'])){
