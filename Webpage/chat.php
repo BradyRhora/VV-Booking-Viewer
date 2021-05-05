@@ -12,7 +12,6 @@
         <meta name="theme-color" content="#ffffff">
     </head>
     <body>
-        
         <?php
             ini_set('display_errors', 1);
             ini_set('display_startup_errors', 1);
@@ -50,36 +49,37 @@
                 $cmd->bindValue(':pass',$md5Pass);
                 $res = $cmd->execute();
                 $ret = $res->fetchArray();
-                if ($ret){
-                    $res->finalize();
-                if (isset($_POST['name']) && isset($_POST['message']))
+                if ($ret)
                 {
-                    $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
-                    $cmd->bindValue(':msg', $_POST['message']);
-                    $cmd->bindValue(':name', $_POST['name']);
-                    $res = $cmd->execute();
                     $res->finalize();
+                    if (isset($_POST['name']) && isset($_POST['message']))
+                    {
+                        $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
+                        $cmd->bindValue(':msg', $_POST['message']);
+                        $cmd->bindValue(':name', $_POST['name']);
+                        $res = $cmd->execute();
+                        $res->finalize();
+                    }
+                    $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
+                        
+                    echo "<div id=\"messages\">";
+                    while ($row = $ret->fetchArray(SQLITE3_ASSOC))
+                    {
+                        echo "<div id=\"msg\">";
+                        echo "<div id=\"msgHeader\">";
+                        echo "<b class=\"name\">".$row['Name']."</b> ";
+                        echo "<p class=\"time\" class=\"time\">".$row['DateTime']."</p></div>";
+                        echo "<p class=\"message\">".$row['Message']."</p> ";
+                        echo "</div>";
+                    }
                 }
-                $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
-                    
-                echo "<div id=\"messages\">";
-                while ($row = $ret->fetchArray(SQLITE3_ASSOC))
-                {
-                    echo "<div id=\"msg\">";
-                    echo "<div id=\"msgHeader\">";
-                    echo "<b class=\"name\">".$row['Name']."</b> ";
-                    echo "<p class=\"time\" class=\"time\">".$row['DateTime']."</p></div>";
-                    echo "<p class=\"message\">".$row['Message']."</p> ";
-                    echo "</div>";
+                else {
+                    echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
                 }
-            }
-            else {
-                echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
-            }
-            } else {
-                echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
-            }
-        ?>
+                } else {
+                    echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
+                }
+            ?>
         </div>
         <form id="textBox" action="chat.php" method="POST">
             <input name="token" type="hidden" value="<?php global $md5Pass; echo $md5Pass ?>">
