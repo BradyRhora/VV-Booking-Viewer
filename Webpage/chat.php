@@ -44,6 +44,8 @@
                     echo "</form></div></div>";
                     
                 }
+                
+                echo "test3";
                 $db = new MyDB();
                 $cmd = $db->prepare("SELECT * FROM INFO WHERE NAME='ChatPass' AND VALUE = :pass");
                 $cmd->bindValue(':pass',$md5Pass);
@@ -59,7 +61,7 @@
                         $res->finalize();
                     }
 
-
+                    echo "test4";
                     $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
                     
                     echo "<div id=\"messages\">";
@@ -79,6 +81,7 @@
             } else {
                 echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
             }
+            echo "test5";
         ?>
         </div>
         <form id="textBox" action="chat.php" method="POST">
