@@ -110,20 +110,63 @@ p, td, th, h1,h2,h3, label{
     bottom:50px;
     right:0px;
     width:350px;
-    height:400px;
+    height:420px;
     background-color: #587291;
     border-top-left-radius: 10px;
     border: 1px #0F1020 solid;
+}
+
+#chat p{
+    text-align:center;
+    color:#FBFBFF;
 }
 
 #chat td {
     padding: 25px;
     background-color: #0F1020;
     border-radius: 10px;
-    color:#FBFBFF
+    color:#FBFBFF;
+    width:20px;
+    
+    position:relative;
+    left:40%;
+    transform: translate(-50%,0);
+}
+
+#chat td:hover, #chat td:active {
+    background-color: #252950;
+    cursor:pointer;
+}
+
+#submitPass input[type=submit]{
+    background-color:#5db765;
+    border: none;
+    cursor:pointer;
+    position:absolute;
+    width:60px;
+    height:60px;
+    left:5px;
+    top:5px;
+}
+
+#pwbox {
+    text-align:center;
+    position:relative;
+    border: 1px solid black;
+    border-radius: 2px;
+    background-color:white;
+    font-size:30px;
+    height:40px;
+    width:100px;
+    left:50%;
+    transform: translate(-50%,0);
 }
 
 @font-face{
     font-family: defaultFont;
     src:url("resources/Roboto-Regular.ttf");
+}
+
+#messageTable{
+    border:2px black solid;
 }
