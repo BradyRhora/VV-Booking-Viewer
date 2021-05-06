@@ -183,7 +183,7 @@
                     for ($o = 0; $o < max(array_map(function($x) {return count($x->names);}, $slots)); $o++){
                         for ($i = 0; $i < count($slots); $i++){
                             if (count($slots[$i]->names) > $o && $slots[$i]->names[0]!=""){
-                                echo "<td>".$slots[$i]->names[$o]."</td>";
+                                echo "<td onmouseover=\"showInfo(this)\">".$slots[$i]->names[$o]."</td>";
                             } else {
                                 echo "<td class=\"empty\"></td>";
                             }
@@ -307,6 +307,16 @@
             
             var box = document.getElementById("pwbox");
             box.value = "*".repeat(pw.length);
+        }
+
+        function isTouchDevice() {
+            return (('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0) ||
+            (navigator.msMaxTouchPoints > 0));
+        }
+
+        function showInfo(tableData){
+            //reveal small box with info about the member (# of bookings, next booking, ?notes?)
         }
     </script>
     
