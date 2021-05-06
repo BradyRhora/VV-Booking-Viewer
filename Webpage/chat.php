@@ -28,7 +28,7 @@
             } else if (isset($_POST["token"])){
                 $md5Pass = $_POST["token"];
             }
-            
+            echo $md5Pass;
             if ($md5Pass != "") 
             {
                 if (!isset($_POST['name'])){
@@ -49,6 +49,7 @@
                 $cmd->bindValue(':pass',$md5Pass);
                 $res = $cmd->execute();
                 $ret = $res->fetchArray();
+                echo $ret;
                 if ($ret)
                 {
                     $res->finalize();
@@ -73,12 +74,15 @@
                         echo "</div>";
                     }
                 }
-                else {
+                else 
+                {
                     echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
                 }
-                } else {
-                    echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
-                }
+            } 
+            else 
+            {
+                echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
+            }
             ?>
         </div>
         <form id="textBox" action="chat.php" method="POST">
