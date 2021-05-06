@@ -1,7 +1,7 @@
 <html>
     <head>
         <?php Header("Cache-Control: max-age=3000, must-revalidate"); ?>
-        <title>Secret Staff Chat</title>
+        <title>Super Secret Staff Chat</title>
         <link rel="stylesheet" href="chatstyle.css?v=<?php echo time(); ?>">
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -28,7 +28,6 @@
             } else if (isset($_POST["token"])){
                 $md5Pass = $_POST["token"];
             }
-            echo $md5Pass;
             if ($md5Pass != "") 
             {
                 if (!isset($_POST['name'])){
@@ -49,7 +48,6 @@
                 $cmd->bindValue(':pass',$md5Pass);
                 $res = $cmd->execute();
                 $ret = $res->fetchArray();
-                echo $ret;
                 if ($ret)
                 {
                     $res->finalize();
