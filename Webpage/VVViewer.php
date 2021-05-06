@@ -4,8 +4,14 @@
 
         <title>VV Booking Viewer</title>
         <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
-        <script src="resources/jquery-3.6.0.js"></script>
 
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#b91d47">
+        <meta name="theme-color" content="#ffffff">
     </head>
     <body>
         <a href="VVViewer.php"><img id="logo" src="resources/logo-variety-ontario.png"></img></a>
@@ -233,7 +239,12 @@
         </div>
 
         <div id="footer">
-            <p id = "left">Remember, if Brady isn't at work then this probably isn't up to date! Don't completely rely on it.</p>
+            <p id = "left"><?php 
+                $msgs = ["Remember, if Brady isn't at work then this probably isn't up to date!",
+                        "Hope your shift is going well!",
+                        "If you're reading this... 😎 You're pretty cool 😎"];
+                echo $msgs[rand(0,count($msgs)-1)];
+            ?></p>
             
             <p id = "right"><?php 
                 $db = new MyDB();
@@ -259,13 +270,16 @@
     ?>
     
     <div id="chat">
-        <h3>coming soon</h3><!--
-        <table>
-            <tr> <td>7</td> <td>8</td> <td>9</td> </tr>
-            <tr> <td>4</td> <td>5</td> <td>6</td> </tr>
-            <tr> <td>1</td> <td>2</td> <td>3</td> </tr>
-            <tr> <td></td> <td>0</td> <td></td> </tr>
-        </table>-->
+        <p>Enter iPad password:</p>
+        <form id="submitPass" action="chat.php" method="POST">
+            <input type="password" readonly id="pwbox" name="pass"></input>
+            <table>
+                <tr> <td onclick="addnum(7)">7</td> <td onclick="addnum(8)">8</td> <td onclick="addnum(9)">9</td> </tr>
+                <tr> <td onclick="addnum(4)">4</td> <td onclick="addnum(5)">5</td> <td onclick="addnum(6)">6</td> </tr>
+                <tr> <td onclick="addnum(1)">1</td> <td onclick="addnum(2)">2</td> <td onclick="addnum(3)">3</td> </tr>
+                <tr> <td style="background-color:#5db765"><input type="submit" value="🙂"></td> <td onclick="addnum(0)">0</td> <td onclick="remnum()" style="background-color:#B75D69">🙁</td> </tr>
+            </table>
+        </form>
     </div>
     
     <script>
@@ -277,18 +291,23 @@
             else
                 chat.style.display = "block";
             open = !open;
-                
-            var db = window.openDatabase("../Bookings.db", "1.0", "Bookings", 10000);
-            console.log(1);
-            db.transaction(function(x){
-                console.log(2);
-                x.executeSql("SELECT * FROM BOOKINGS LIMIT 1", [], function (x,result){
-                    console.log(3);
-                    var dataset = result.rows;
-                    console.log(dataset);
-                });
-            })
-        }    
+        }
+
+        var pw = "";
+        function addnum(num){
+            if (pw.length < 4) {
+                pw += num;
+                var box = document.getElementById("pwbox");
+                box.value = pw;
+            }
+        }
+
+        function remnum(){
+            pw = pw.substring(0,pw.length-1);
+            
+            var box = document.getElementById("pwbox");
+            box.value = "*".repeat(pw.length);
+        }
     </script>
     
 
