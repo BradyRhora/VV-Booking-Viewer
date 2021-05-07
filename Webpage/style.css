@@ -170,3 +170,47 @@ p, td, th, h1,h2,h3, label{
 #messageTable{
     border:2px black solid;
 }
+
+#infoHolder{
+    position:absolute;
+    border: 1px solid black;
+    display:none;
+}
+
+#infoHeader{
+    text-align:right;
+    background-color: silver;
+}
+
+#closeInfo{
+    margin:0px;
+    fill:red;
+    position:relative;
+    right:0px;
+    padding:1px;
+    width:15px;
+    display:inline;
+    cursor:pointer;
+}
+
+#infoHeader>p{
+    left:0px;
+    text-align:left;
+    display:inline;
+    color:black;
+}
+
+#infoBox{
+    background-color:#e9eb75;
+    border-top: 1px solid black;
+    border-bottom-left-radius:2px;
+    border-bottom-right-radius:2px;
+    height:100px;
+}
+
+#infoBox textarea{
+    position:relative;
+    width:100%;
+    height:100%;
+    background-color:transparent;
+}
