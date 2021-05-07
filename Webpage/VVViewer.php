@@ -183,7 +183,7 @@
                     for ($o = 0; $o < max(array_map(function($x) {return count($x->names);}, $slots)); $o++){
                         for ($i = 0; $i < count($slots); $i++){
                             if (count($slots[$i]->names) > $o && $slots[$i]->names[0]!=""){
-                                echo "<td onmouseover=\"showInfo(this)\">".$slots[$i]->names[$o]."</td>";
+                                echo "<td onmousedown=\"showInfo(this, event)\">".$slots[$i]->names[$o]."</td>";
                             } else {
                                 echo "<td class=\"empty\"></td>";
                             }
@@ -315,11 +315,47 @@
             (navigator.msMaxTouchPoints > 0));
         }
 
-        function showInfo(tableData){
+        function showInfo(tableData, e){
             //reveal small box with info about the member (# of bookings, next booking, ?notes?)
+            
+
+            var box = document.getElementById("infoHolder");
+            var txt = document.getElementById("notes");
+            var name = document.getElementById("infoName");
+            name.innerText = tableData.innerText;
+            var notes = "";
+            var data = fetch('/DBCall.php?Type=GetNotes&Name=' + tableData.innerText)
+                        .then(response=>response.json())
+                        .then(value=>{
+                            txt.value=value["Notes"];
+                            console.log(txt.innerText+' - but it should be: ' + value['Notes']);
+                            box.style.left = e.clientX+50;
+                            box.style.top = e.clientY;
+                            box.style.display = "block";
+                        });
+        }
+
+        function closeInfo(){ //currently ONLY saves when closing with the X button
+            var box = document.getElementById("infoHolder");
+            box.style.display = "none";
+            var name = document.getElementById("infoName").innerText;
+            var notes = document.getElementById("notes").value;
+            var data = fetch('/DBCall.php?Type=SetNotes&Name='+name+'&Notes='+notes);
         }
     </script>
     
+    <div id = "infoHolder">
+        <div id="infoHeader">
+            <p id=infoName></p>
+            <svg title="Save & Close" id="closeInfo" onmousedown="closeInfo()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg>
+        </div>
+        <div id="infoBox">
+            <textArea id="notes" style="resize: none;">
+                
+            </textArea>
+        </div>
+    </div>
+
 
     </body>
 </html>
