@@ -21,14 +21,14 @@
                 $this->open('../Databases.db');
                 }
             }
-            $md5Pass = "";
+            $shaPass = "";
             if (isset($_POST["pass"])){
                 $pass = $_POST["pass"];
-                $md5Pass = md5($pass);
+                $shaPass = hash('sha256',$pass);
             } else if (isset($_POST["token"])){
-                $md5Pass = $_POST["token"];
+                $shaPass = $_POST["token"];
             }
-            if ($md5Pass != "") 
+            if ($shaPass != "") 
             {
                 if (!isset($_POST['name'])){
                     echo <<<EOT
@@ -39,13 +39,13 @@
                     <input type="text" name="name">
                     <input type="submit">
                     EOT;
-                    echo "<input name=\"token\" type=\"hidden\" value=\"".$md5Pass."\">";
+                    echo "<input name=\"token\" type=\"hidden\" value=\"".$shaPass."\">";
                     echo "</form></div></div>";
                 }
                 
                 $db = new MyDB();
                 $cmd = $db->prepare("SELECT * FROM INFO WHERE NAME='ChatPass' AND VALUE = :pass");
-                $cmd->bindValue(':pass',$md5Pass);
+                $cmd->bindValue(':pass',$shaPass);
                 $res = $cmd->execute();
                 $ret = $res->fetchArray();
                 if ($ret)
@@ -84,7 +84,7 @@
             ?>
         </div>
         <form id="textBox" action="chat.php" method="POST">
-            <input name="token" type="hidden" value="<?php global $md5Pass; echo $md5Pass ?>">
+            <input name="token" type="hidden" value="<?php global $shaPass; echo $shaPass ?>">
             <input name="name" type="hidden" value="<?php if (isset($_POST['name'])) echo $_POST['name'] ?>">
             <textarea id="message" name="message"></textarea>
             <input type="submit" value="Send">
@@ -92,7 +92,7 @@
 
         <div id="footer">
             <form id="reload" method="POST">
-                <input name="token" type="hidden" value="<?php global $md5Pass; echo $md5Pass ?>">
+                <input name="token" type="hidden" value="<?php global $shaPass; echo $shaPass ?>">
                 <?php if (isset($_POST['name'])) echo "<input name=\"name\" type=\"hidden\" value=\"".$_POST['name']."\">";?>
                 <p id = "left">This doesn't auto update, you'll have to <input type="submit" value="Reload"></input> to see new messages.</p>
             </form>
