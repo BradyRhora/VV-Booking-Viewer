@@ -47,7 +47,6 @@
                 var year = date.getFullYear().toString();
                 var month = (date.getMonth()+1).toString();
                 var day = date.getDate().toString();
-                console.log(year + " " + month + " " + day);
                 if (month.length == 1) month = "0"+month;
                 if (day.length == 1)day = "0"+day;
                 document.getElementsByTagName("input")[0].setAttribute("value",year+"-"+month+"-"+day);
@@ -55,9 +54,7 @@
 
             function nextDay(){
                 var currentDay = new Date(document.getElementsByTagName("input")[0].getAttribute("value") + " EST");
-                console.log(currentDay);
                 currentDay.setDate(currentDay.getDate()+1);
-                console.log(currentDay);
                 setTime(currentDay);
             }
 
@@ -330,15 +327,13 @@
             data.append('Type',"GetNotes");
             data.append('Name',tableData.innerText);
             var f = fetch('/DBCall.php',{method:'post',body:data})
-                        .then(response=>response.json())
-                        .then(value=>{
-			    console.log("note loaded check out this uhhh json");
- 			    console.log(value);
-			    txt.value=value["Notes"];
+                            .then(response=>response.json())
+                            .then(value=>{
+                            txt.value=value["Notes"];
                             box.style.left = e.clientX+50;
                             box.style.top = e.clientY;
-			    box.style.display = "block";
-			    infoOpen = true;
+                            box.style.display = "block";
+                            infoOpen = true;
                         });
         }
 
@@ -347,13 +342,11 @@
   	    var box = document.getElementById("infoHolder");
 	    box.style.display = "none";
 	    document.getElementById("notes").value.replace("\n",""); //idk if this even works look at it later
-	    console.log("closing note: " + document.getElementById("notes").value);
 	    if (document.getElementById("notes").value != "")
 	    	saveNote();
         }
 
 	function saveNote(){
-	    console.log("saving note...");
             clearTimeout(lastTimer);
             var name = document.getElementById("infoName").innerText;
             var notes = document.getElementById("notes").value;
@@ -361,8 +354,7 @@
             var data = new URLSearchParams();
             data.append('Type','SetNotes');
             data.append('Name',name);
-	    data.append('Notes',notes);
-	    console.log(`saving note with params: ${name}, ${notes}`);
+	        data.append('Notes',notes);
             var f = fetch('/DBCall.php',{
                     method: 'post',
                     body: data
