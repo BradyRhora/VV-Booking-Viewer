@@ -317,31 +317,47 @@
 
         function showInfo(tableData, e){
             //reveal small box with info about the member (# of bookings, next booking, ?notes?)
-            
-
+            closeInfo();
+            if (e.button != 0) return;
             var box = document.getElementById("infoHolder");
             var txt = document.getElementById("notes");
             var name = document.getElementById("infoName");
             name.innerText = tableData.innerText;
             var notes = "";
-            var data = fetch('/DBCall.php?Type=GetNotes&Name=' + tableData.innerText)
+            var data = new URLSearchParams();
+            data.append('Type',"GetNotes");
+            data.append('Name',tableData.innerText);
+            var data = fetch('/DBCall.php',{method:'post',body:data})
                         .then(response=>response.json())
                         .then(value=>{
                             txt.value=value["Notes"];
-                            console.log(txt.innerText+' - but it should be: ' + value['Notes']);
                             box.style.left = e.clientX+50;
                             box.style.top = e.clientY;
                             box.style.display = "block";
                         });
         }
 
-        function closeInfo(){ //currently ONLY saves when closing with the X button
+        function closeInfo(){
             var box = document.getElementById("infoHolder");
             box.style.display = "none";
+            saveNote();
+        }
+
+        function saveNote(){
+            clearTimeout(lastTimer);
             var name = document.getElementById("infoName").innerText;
             var notes = document.getElementById("notes").value;
-            var data = fetch('/DBCall.php?Type=SetNotes&Name='+name+'&Notes='+notes);
+
+            var data = new URLSearchParams();
+            data.append('Type','SetNotes');
+            data.append('Name',name);
+            data.append('Notes',notes);
+            fetch('/DBCall.php',{
+                    method: 'post',
+                    body: data
+                });
         }
+
     </script>
     
     <div id = "infoHolder">
@@ -356,6 +372,14 @@
         </div>
     </div>
 
+    <script>
+        var lastTimer;
+        let noteTextArea = document.getElementById("notes");
+        noteTextArea.addEventListener('input', (e) =>{
+            clearTimeout(lastTimer);
+            lastTimer = setTimeout(saveNote, 1000);
+        });
+    </script>
 
     </body>
 </html>

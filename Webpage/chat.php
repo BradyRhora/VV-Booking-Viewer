@@ -50,21 +50,12 @@
                 $ret = $res->fetchArray();
                 if ($ret)
                 {
-                    $res->finalize();
-                    if (isset($_POST['name']) && isset($_POST['message']))
-                    {
-                        $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
-                        $cmd->bindValue(':msg', $_POST['message']);
-                        $cmd->bindValue(':name', $_POST['name']);
-                        $res = $cmd->execute();
-                        $res->finalize();
-                    }
                     $ret = $db->query("SELECT * FROM MESSAGES ORDER BY DATETIME");
                         
                     echo "<div id=\"messages\">";
                     while ($row = $ret->fetchArray(SQLITE3_ASSOC))
                     {
-                        echo "<div id=\"msg\">";
+                        echo "<div id=\"msg\" data-id=\"".$row['ID']."\">";
                         echo "<div id=\"msgHeader\">";
                         echo "<b class=\"name\">".$row['Name']."</b> ";
                         echo "<p class=\"time\" class=\"time\">".$row['DateTime']."</p></div>";
@@ -83,7 +74,7 @@
             }
             ?>
         </div>
-        <form id="textBox" action="chat.php" method="POST">
+        <form id="textBox" onsubmit="return sendMessage()">
             <input name="token" type="hidden" value="<?php global $shaPass; echo $shaPass ?>">
             <input name="name" type="hidden" value="<?php if (isset($_POST['name'])) echo $_POST['name'] ?>">
             <textarea id="message" name="message"></textarea>
@@ -91,11 +82,7 @@
         </form>
 
         <div id="footer">
-            <form id="reload" method="POST">
-                <input name="token" type="hidden" value="<?php global $shaPass; echo $shaPass ?>">
-                <?php if (isset($_POST['name'])) echo "<input name=\"name\" type=\"hidden\" value=\"".$_POST['name']."\">";?>
-                <p id = "left">This doesn't auto update, you'll have to <input type="submit" value="Reload"></input> to see new messages.</p>
-            </form>
+            <p id = "left">Hey whaddup this the super secret chat</p>
             <p id = "right"><a href="VVViewer.php">Click here to return to the schedule.</p>
         </div>
 
@@ -104,6 +91,66 @@
             if (document.addEventListener) document.addEventListener("DOMContentLoaded", scrollBottom, false)
             else if (window.attachEvent) window.attachEvent("onload", scrollBottom);
             else window.onload=scrollBottom;
+
+            function sendMessage(){
+                //debugger;
+                var data = new URLSearchParams();
+                var formData = new FormData(document.querySelector('form'));
+                var name = formData.get('name');
+                data.append("Name",name);
+                var txtBox = document.getElementById("message");
+                
+                data.append("Message",txtBox.value);
+                data.append("Type","SendMessage");
+                fetch('DBCall.php', {
+                    method: 'post',
+                    body: data
+                });
+                txtBox.value="";
+                return false;
+            }
+
+            function updateChat(){
+                var msgDiv = document.getElementById('messages');
+                var last = msgDiv.children[msgDiv.children.length-1];
+                var id = last.getAttribute('data-id');
+
+                var data = new URLSearchParams();
+                data.append('Type',"GetMessages");
+                data.append('ID',id);
+                
+
+                var data = fetch('/DBCall.php',{method:'post',body:data})
+                        .then(response=>response.json())
+                        .then(value=>{
+                            value.forEach(function(e){
+                                var d = document.createElement("div");
+                                msgDiv.appendChild(d);
+                                d.id = "msg";
+                                d.setAttribute('data-id',e['ID']);
+                                var head = document.createElement("div");
+                                head.id = "msgHeader";
+                                d.appendChild(head);
+                                var name = document.createElement("b");
+                                name.className = "name";
+                                name.innerText = e['Name'];
+                                head.appendChild(name);
+                                var time = document.createElement("p");
+                                time.className = "time";
+                                time.innerText = e['Time'];
+                                head.appendChild(time);
+                                var msg = document.createElement("p");
+                                msg.className="message";
+                                msg.innerText=e['Message'];
+                                d.appendChild(msg);
+
+                                });
+                    });
+
+                setTimeout(updateChat,1500);
+            }
+
+            setTimeout(updateChat,1500);
         </script>
     </body>
 </html>

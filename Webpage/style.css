@@ -40,7 +40,7 @@ form{
 #daySched td{
     background-color:#587291;
     width:120px;
-    
+    cursor:pointer;
     text-size-adjust:175%;
 }
 #daySched th{

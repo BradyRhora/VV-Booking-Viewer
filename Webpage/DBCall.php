@@ -19,13 +19,26 @@
         }
     }
 
+    class Message{
+        public $ID;
+        public $Name;
+        public $Message;
+        public $Time;
+        function __construct($id,$name,$msg,$time){
+            $this->ID=$id;
+            $this->Name=$name;
+            $this->Message=$msg;
+            $this->Time=$time;
+        }
+    }
+
     $db = new MyDB();
-    if (isset($_GET['Type']))
+    if (isset($_POST['Type']))
     {
-        $type = $_GET['Type'];
+        $type = $_POST['Type'];
         if ($type == 'GetNotes')
         {
-            $name = $_GET['Name'];
+            $name = $_POST['Name'];
 
             $cmd = $db->prepare("SELECT * FROM MemberInfo WHERE Name = :name");
             $cmd->bindValue(":name",$name);
@@ -34,13 +47,33 @@
             $member = new MemberNote($arr['Name'],$arr['Notes']);
             echo json_encode($member);
         } else if ($type == 'SetNotes') {
-            $name = $_GET['Name'];
-            $notes = $_GET['Notes'];
+            $name = $_POST['Name'];
+            $notes = $_POST['Notes'];
             
             $cmd = $db->prepare("INSERT OR REPLACE INTO MemberInfo VALUES(:name,:notes)");
             $cmd->bindValue(':name',$name);
             $cmd->bindValue(':notes',$notes);
             $result = $cmd->execute();
+            $result.finalize();
+        } else if ($type == 'GetMessages') {
+            $id = $_POST['ID'];
+            $cmd = $db->prepare("SELECT * FROM MESSAGES WHERE ID > :id");
+            $cmd->bindValue(':id',$id);
+            $res = $cmd->execute();
+            $msgs = [];
+            while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+                array_push($msgs,new Message($row['ID'],$row['Name'],$row['Message'],$row['DateTime']));
+            }
+            echo json_encode($msgs);
+            $res->finalize();
+        } else if ($type == 'SendMessage') {
+            $name = $_POST['Name'];
+            $message = $_POST['Message'];
+            $cmd = $db->prepare("INSERT INTO messages(name,message,datetime) VALUES(:name,:msg,datetime('now'))");
+            $cmd->bindValue(':msg', $message);
+            $cmd->bindValue(':name', $name);
+            $res = $cmd->execute();
+            $res->finalize();
         }
     }
 ?>
