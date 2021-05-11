@@ -36,6 +36,7 @@ form{
     border-collapse: collapse;
     font-size:20px;
     color:#FBFBFF;
+    text-align:center;
 }
 #daySched td{
     background-color:#587291;
@@ -88,6 +89,7 @@ form{
     top:350px;
     left:0px;
     padding-bottom:60px;
+    width:100%;
 }
 
 #schedules>td,#schedules>table, #memberSchedule>td,#memberSchedule>table{
@@ -214,3 +216,4 @@ p, td, th, h1,h2,h3, label{
     height:100%;
     background-color:transparent;
 }
+

@@ -107,11 +107,17 @@
                 $stm1->bindValue(':date',$_POST["date"]);
                 $ret1 = $stm1->execute();
                 $slots = [];
+
                 while ($row1 = $ret1->fetchArray(SQLITE3_ASSOC)) {
                     array_push($slots, $row1['DATETIME']);
                 }
                 $ret1->finalize();
-                
+                if ($_POST['date'] == ""){
+                    echo "<h2>Please input a date.</h2>";
+                }
+                else if (count($slots) == 0){
+                    echo "<h2>No bookings found.</h2>";
+                }
                 $Bookings = [];
                 foreach($slots as $slot)
                 {
@@ -206,30 +212,24 @@
                     $stm = $db->prepare(<<<EOT
                     SELECT * FROM BOOKINGS
                     WHERE NAME LIKE :name
-                    ORDER BY DATETIME
+                    ORDER BY DATETIME DESC
                 EOT);
                     $stm->bindValue(':name','%'.$name.'%');
                     $ret = $stm->execute();
-                    echo "<table><tr><th>Name</th><th>Area</th><th>Section</th><th>Time</th></tr>";
+                    echo "<table id=\"daySched\"><tr><th>Name</th><th>Area</th><th>Section</th><th>Time</th></tr>";
                     
                     while ($row = $ret->fetchArray(SQLITE3_ASSOC)) {
                         echo "<tr>";
                         echo "<td>".$row["NAME"]."</td>";
                         echo "<td>".$row["AREA"]."</td>";
                         echo "<td>".$row["SECTION"]."</td>";
-                        echo "<td>".$row["DATETIME"]."</td>";
+                        $time = new DateTime($row["DATETIME"]);
+                        echo "<td>".$time->format('M d Y g:i a')."</td>";
                         echo "</tr>";
                     }
                     $ret->finalize();
                     
                     echo "</table>";
-
-                    /*
-                    $stm = $db->prepare("SELECT * FROM BOOKINGS WHERE NAME LIKE '%:name%' ORDER BY DATETIME");
-                    $stm->bindValue(':name',$name);
-                    var_dump($stm->getSQL(true));
-                    $ret = $stm->execute();
-                    */
                 }
             ?>
 
