@@ -314,36 +314,46 @@
             (navigator.maxTouchPoints > 0) ||
             (navigator.msMaxTouchPoints > 0));
         }
-
+	var infoOpen = false;
         function showInfo(tableData, e){
             //reveal small box with info about the member (# of bookings, next booking, ?notes?)
-            closeInfo();
+		if (infoOpen) closeInfo();
+	    
             if (e.button != 0) return;
             var box = document.getElementById("infoHolder");
             var txt = document.getElementById("notes");
             var name = document.getElementById("infoName");
             name.innerText = tableData.innerText;
             var notes = "";
-            var data = new URLSearchParams();
+	    var data = new URLSearchParams();
+	    console.log(`loading note with params: ${tableData.innerText}`);
             data.append('Type',"GetNotes");
             data.append('Name',tableData.innerText);
-            var data = fetch('/DBCall.php',{method:'post',body:data})
+            var f = fetch('/DBCall.php',{method:'post',body:data})
                         .then(response=>response.json())
                         .then(value=>{
-                            txt.value=value["Notes"];
+			    console.log("note loaded check out this uhhh json");
+ 			    console.log(value);
+			    txt.value=value["Notes"];
                             box.style.left = e.clientX+50;
                             box.style.top = e.clientY;
-                            box.style.display = "block";
+			    box.style.display = "block";
+			    infoOpen = true;
                         });
         }
 
         function closeInfo(){
-            var box = document.getElementById("infoHolder");
-            box.style.display = "none";
-            saveNote();
+	    infoOpen = false;	
+  	    var box = document.getElementById("infoHolder");
+	    box.style.display = "none";
+	    document.getElementById("notes").value.replace("\n",""); //idk if this even works look at it later
+	    console.log("closing note: " + document.getElementById("notes").value);
+	    if (document.getElementById("notes").value != "")
+	    	saveNote();
         }
 
-        function saveNote(){
+	function saveNote(){
+	    console.log("saving note...");
             clearTimeout(lastTimer);
             var name = document.getElementById("infoName").innerText;
             var notes = document.getElementById("notes").value;
@@ -351,8 +361,9 @@
             var data = new URLSearchParams();
             data.append('Type','SetNotes');
             data.append('Name',name);
-            data.append('Notes',notes);
-            fetch('/DBCall.php',{
+	    data.append('Notes',notes);
+	    console.log(`saving note with params: ${name}, ${notes}`);
+            var f = fetch('/DBCall.php',{
                     method: 'post',
                     body: data
                 });

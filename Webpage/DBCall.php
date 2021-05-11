@@ -32,20 +32,24 @@
         }
     }
 
-    $db = new MyDB();
+    
+    //$_POST['Type'] = 'GetNotes';
     if (isset($_POST['Type']))
     {
-        $type = $_POST['Type'];
+	$db = new MyDB(); 
+	$db->busyTimeout(5000);   
+	$type = $_POST['Type'];
         if ($type == 'GetNotes')
         {
             $name = $_POST['Name'];
-
+            //$name = 'Jamie Sherwin';
             $cmd = $db->prepare("SELECT * FROM MemberInfo WHERE Name = :name");
             $cmd->bindValue(":name",$name);
             $result = $cmd->execute();
             $arr = $result->fetchArray(SQLITE3_ASSOC);
             $member = new MemberNote($arr['Name'],$arr['Notes']);
-            echo json_encode($member);
+	    echo json_encode($member);
+	    $result->finalize();
         } else if ($type == 'SetNotes') {
             $name = $_POST['Name'];
             $notes = $_POST['Notes'];
@@ -54,7 +58,7 @@
             $cmd->bindValue(':name',$name);
             $cmd->bindValue(':notes',$notes);
             $result = $cmd->execute();
-            $result.finalize();
+            $result->finalize();
         } else if ($type == 'GetMessages') {
             $id = $_POST['ID'];
             $cmd = $db->prepare("SELECT * FROM MESSAGES WHERE ID > :id");
@@ -74,6 +78,8 @@
             $cmd->bindValue(':name', $name);
             $res = $cmd->execute();
             $res->finalize();
-        }
+	}
+	$db->close();
+	unset($db);
     }
 ?>
