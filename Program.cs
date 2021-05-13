@@ -78,7 +78,7 @@ namespace VV_Viewer
                         bool noBookings = !(await bs.GetBookingsOnLoadedDay());
                         if (noBookings) noBookingCounter++;
                         else noBookingCounter = 0;
-                        if (noBookingCounter == 2) loop = false;
+                        if (noBookingCounter == 3) loop = false;
                         else 
                         {
                             if (bs.Bookings.Count > 0)
