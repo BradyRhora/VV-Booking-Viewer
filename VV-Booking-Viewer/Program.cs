@@ -66,7 +66,7 @@ namespace VV_Viewer
             await bs.GoToCurrentDay();
             if (dbChoice.KeyChar == 'd' || dbChoice.KeyChar == 'f')
             {
-                string connectionString = "Data Source=Databases.db;Version=3;";
+                string connectionString = "Data Source=../Databases.db;Version=3;";
                 using (var con = new SQLiteConnection(connectionString))
                 {
                     con.Open();
