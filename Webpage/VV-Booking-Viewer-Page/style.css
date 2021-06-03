@@ -1,0 +1,219 @@
+h1, h2, h3{
+    color:#0F1020;
+    text-size-adjust:200%;
+    text-align: center;
+}
+body{
+    background-color: #C8E0F4;
+    overflow-x:hidden;
+}
+
+#menu{
+    overflow:hidden;
+    position:absolute;
+    left:50%;
+    transform: translate(-50%,0);
+    margin-top:20px;
+}
+
+#logo{
+    width:150px;
+    float:left;
+    overflow:hidden;
+    margin:20px;
+}
+
+form{
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
+    background-color:#7a93b1;
+    border: 1px #0F1020 solid;
+}
+
+#daySched,#daySched th,#daySched td {
+    border: 1px solid #0F1020;
+    border-collapse: collapse;
+    font-size:20px;
+    color:#FBFBFF;
+    text-align:center;
+}
+#daySched td{
+    background-color:#587291;
+    width:120px;
+    cursor:pointer;
+    text-size-adjust:175%;
+}
+#daySched th{
+    background-color:#0F1020;
+    text-size-adjust:150%;
+}
+#daySched td.empty{
+    background-color:#B75D69;
+}
+
+#footer{
+    background-color:#0F1020;
+    position:fixed;
+    bottom:0px;
+    width:100%;
+    height:50px;
+    overflow: hidden;
+    left:0px;
+}
+
+#footer>p{
+    position:fixed;
+    bottom:0px;
+    color:#FBFBFF;
+}
+
+#footer>#right{
+    right:0px;
+    margin-right:15px;
+}
+
+#footer path{
+    position:relative;
+    fill: #FBFBFF;
+    left:5px;
+}
+
+#footer>#left{
+    left:0px;
+    margin-left:15px;
+}
+
+#schedules, #memberSchedule{
+    position:absolute;
+    top:350px;
+    left:0px;
+    padding-bottom:60px;
+    width:100%;
+}
+
+#schedules>td,#schedules>table, #memberSchedule>td,#memberSchedule>table{
+    width:100vw;
+    height:100px;
+    margin:0px;
+}
+
+p, td, th, h1,h2,h3, label{
+    font-family:defaultFont;
+}
+
+#chatbutton{
+    cursor:pointer;
+}
+
+#chat{
+    display:none;
+    position:fixed;
+    bottom:50px;
+    right:0px;
+    width:350px;
+    height:420px;
+    background-color: #587291;
+    border-top-left-radius: 10px;
+    border: 1px #0F1020 solid;
+}
+
+#chat p{
+    text-align:center;
+    color:#FBFBFF;
+}
+
+#chat td {
+    padding: 25px;
+    background-color: #0F1020;
+    border-radius: 10px;
+    color:#FBFBFF;
+    width:20px;
+    
+    position:relative;
+    left:40%;
+    transform: translate(-50%,0);
+}
+
+#chat td:hover, #chat td:active {
+    background-color: #252950;
+    cursor:pointer;
+}
+
+#submitPass input[type=submit]{
+    background-color:#5db765;
+    border: none;
+    cursor:pointer;
+    position:absolute;
+    width:60px;
+    height:60px;
+    left:5px;
+    top:5px;
+}
+
+#pwbox {
+    text-align:center;
+    position:relative;
+    border: 1px solid black;
+    border-radius: 2px;
+    background-color:white;
+    font-size:30px;
+    height:40px;
+    width:100px;
+    left:50%;
+    transform: translate(-50%,0);
+}
+
+@font-face{
+    font-family: defaultFont;
+    src:url("resources/Roboto-Regular.ttf");
+}
+
+#messageTable{
+    border:2px black solid;
+}
+
+#infoHolder{
+    position:absolute;
+    border: 1px solid black;
+    display:none;
+}
+
+#infoHeader{
+    text-align:right;
+    background-color: silver;
+}
+
+#closeInfo{
+    margin:0px;
+    fill:red;
+    position:relative;
+    right:0px;
+    padding:1px;
+    width:15px;
+    display:inline;
+    cursor:pointer;
+}
+
+#infoHeader>p{
+    left:0px;
+    text-align:left;
+    display:inline;
+    color:black;
+}
+
+#infoBox{
+    background-color:#e9eb75;
+    border-top: 1px solid black;
+    border-bottom-left-radius:2px;
+    border-bottom-right-radius:2px;
+    height:100px;
+}
+
+#infoBox textarea{
+    position:relative;
+    width:100%;
+    height:100%;
+    background-color:transparent;
+}
+

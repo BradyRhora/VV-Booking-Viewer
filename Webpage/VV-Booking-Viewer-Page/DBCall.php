@@ -6,7 +6,7 @@
 
     class MyDB extends SQLite3 {
         function __construct() {
-        $this->open('../Databases.db');
+        $this->open('../../Databases.db');
         }
     }
 

@@ -2,12 +2,12 @@
     <head>
         <?php Header("Cache-Control: max-age=3000, must-revalidate"); ?>
         <title>Super Secret Staff Chat</title>
-        <link rel="stylesheet" href="chatstyle.css?v=<?php echo time(); ?>">
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="stylesheet" href="/VV-Booking-Viewer-Page/chatstyle.css?v=<?php echo time(); ?>">
+        <link rel="apple-touch-icon" sizes="180x180" href="/VV-Booking-Viewer-Page/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/VV-Booking-Viewer-Page/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/VV-Booking-Viewer-Page/favicon-16x16.png">
+        <link rel="manifest" href="/VV-Booking-Viewer-Page/site.webmanifest">
+        <link rel="mask-icon" href="/VV-Booking-Viewer-Page/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="msapplication-TileColor" content="#b91d47">
         <meta name="theme-color" content="#ffffff">
     </head>
@@ -18,7 +18,7 @@
             error_reporting(E_ALL);
             class MyDB extends SQLite3 {
                 function __construct() {
-                $this->open('../Databases.db');
+                $this->open('../../Databases.db');
                 }
             }
             $shaPass = "";
@@ -65,12 +65,12 @@
                 }
                 else 
                 {
-                    echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
+                    echo "<p style=\"color:black;\">Password invalid. Click <a href=\"/VV-Booking-Viewer-Page/VVViewer.php\">here</a> to return to the main page.</p>";
                 }
             } 
             else 
             {
-                echo "<p style=\"color:black;\">Password invalid. Click <a href=\"VVViewer.php\">here</a> to return to the main page.</p>";
+                echo "<p style=\"color:black;\">Password invalid. Click <a href=\"/VV-Booking-Viewer-Page/VVViewer.php\">here</a> to return to the main page.</p>";
             }
             ?>
         </div>
@@ -83,7 +83,7 @@
 
         <div id="footer">
             <p id = "left">Hey whaddup this the super secret chat</p>
-            <p id = "right"><a href="VVViewer.php">Click here to return to the schedule.</p>
+            <p id = "right"><a href="/VV-Booking-Viewer-Page/VVViewer.php">Click here to return to the schedule.</p>
         </div>
 
         <script>
@@ -120,7 +120,7 @@
                 data.append('ID',id);
                 
 
-                var data = fetch('/DBCall.php',{method:'post',body:data})
+                var data = fetch('/VV-Booking-Viewer-Page/DBCall.php',{method:'post',body:data})
                         .then(response=>response.json())
                         .then(value=>{
                             value.forEach(function(e){

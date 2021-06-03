@@ -3,21 +3,21 @@
         <?php Header("Cache-Control: max-age=3000, must-revalidate"); ?>
 
         <title>VV Booking Viewer</title>
-        <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="/VV-Booking-Viewer-Page/style.css?v=<?php echo time(); ?>">
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="apple-touch-icon" sizes="180x180" href="/VV-Booking-Viewer-Page/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/VV-Booking-Viewer-Page/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/VV-Booking-Viewer-Page/favicon-16x16.png">
+        <link rel="manifest" href="/VV-Booking-Viewer-Page/site.webmanifest">
+        <link rel="mask-icon" href="/VV-Booking-Viewer-Page/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="msapplication-TileColor" content="#b91d47">
         <meta name="theme-color" content="#ffffff">
     </head>
     <body>
-        <a href="VVViewer.php"><img id="logo" src="resources/logo-variety-ontario.png"></img></a>
+        <a href="VVViewer.php"><img id="logo" src="/VV-Booking-Viewer-Page/resources/logo-variety-ontario.png"></img></a>
         <div id="menu">
             <h1>Welcome to the Variety Village Booking Viewer</h1>
-                    <form id="schedForm" action="VVViewer.php" method="POST">
+                    <form id="schedForm" action="/VV-Booking-Viewer-Page/VVViewer.php" method="POST">
                         <label for="area">Choose an area:</label>
                         <select name="area" id="area">
                             <option value="Aquatics" <?php if (isset($_POST["area"]) && $_POST["area"] == "Aquatics") echo "selected"?>>Aquatics</option>
@@ -34,7 +34,7 @@
                         <br><br>
                         <input type="submit" id="submit" name="submit" >
                     </form>
-                    <form id="searchForm" action="VVViewer.php" method="POST">
+                    <form id="searchForm" action="/VV-Booking-Viewer-Page/VVViewer.php" method="POST">
                         <label for="search">Member lookup:</label>
                         <input id="search" name="search" <?php if (isset($_POST["search"])) echo "value=\"".$_POST["search"]."\""?> onfocus="this.value = this.value;"></input>
                         <?php if (isset($_POST["search"])) echo "<script>document.getElementById(\"search\").focus()</script>" ?>
@@ -70,7 +70,7 @@
             <?php
             class MyDB extends SQLite3 {
                 function __construct() {
-                $this->open('../Databases.db');
+                $this->open('../../Databases.db');
                 }
             }
 
@@ -268,7 +268,7 @@
     
     <div id="chat">
         <p>Enter iPad password:</p>
-        <form id="submitPass" action="chat.php" method="POST">
+        <form id="submitPass" action="/VV-Booking-Viewer-Page/chat.php" method="POST">
             <input type="password" readonly id="pwbox" name="pass"></input>
             <table>
                 <tr> <td onclick="addnum(7)">7</td> <td onclick="addnum(8)">8</td> <td onclick="addnum(9)">9</td> </tr>
@@ -323,10 +323,9 @@
             name.innerText = tableData.innerText;
             var notes = "";
 	    var data = new URLSearchParams();
-	    console.log(`loading note with params: ${tableData.innerText}`);
             data.append('Type',"GetNotes");
             data.append('Name',tableData.innerText);
-            var f = fetch('/DBCall.php',{method:'post',body:data})
+            var f = fetch('/VV-Booking-Viewer-Page/DBCall.php',{method:'post',body:data})
                             .then(response=>response.json())
                             .then(value=>{
                             txt.value=value["Notes"];
@@ -355,7 +354,7 @@
             data.append('Type','SetNotes');
             data.append('Name',name);
 	        data.append('Notes',notes);
-            var f = fetch('/DBCall.php',{
+            var f = fetch('/VV-Booking-Viewer-Page/DBCall.php',{
                     method: 'post',
                     body: data
                 });
