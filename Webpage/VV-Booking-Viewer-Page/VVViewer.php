@@ -38,7 +38,7 @@
                         <label for="search">Member lookup:</label>
                         <input id="search" name="search" <?php if (isset($_POST["search"])) echo "value=\"".$_POST["search"]."\""?> onfocus="this.value = this.value;"></input>
                         <?php if (isset($_POST["search"])) echo "<script>document.getElementById(\"search\").focus()</script>" ?>
-                        <input type="submit" name="submit" value="Search">
+                        <input type="submit" name="submit" value="Search"> <!-- change this so that you cant submit when empty -->
                     </form>
             </table>
         </div>
